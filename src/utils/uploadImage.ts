@@ -1,4 +1,4 @@
-import { createSessionClient } from "@/lib/server/appwrite"
+import { createSessionClient } from "@/lib/appwrite/appwrite"
 import { NextResponse } from "next/server";
 import { ID } from "node-appwrite";
 import { InputFile } from "node-appwrite/file";
