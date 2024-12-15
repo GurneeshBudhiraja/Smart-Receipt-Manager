@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { Client, Account } from "node-appwrite";
+import { Client, Account, Storage, Databases } from "node-appwrite";
 
 // TODO: fix this ts any
 export async function createSessionClient() {
@@ -18,6 +18,12 @@ export async function createSessionClient() {
     get account() {
       return new Account(client);
     },
+    get storage() {
+      return new Storage(client);
+    },
+    get db() {
+      return new Databases(client)
+    }
   };
 }
 
@@ -31,5 +37,11 @@ export async function createAdminClient() {
     get account() {
       return new Account(client);
     },
+    get storage() {
+      return new Storage(client);
+    },
+    get db() {
+      return new Databases(client)
+    }
   };
 }
