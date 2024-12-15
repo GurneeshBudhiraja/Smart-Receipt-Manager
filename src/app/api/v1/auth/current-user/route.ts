@@ -1,9 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
-import { createAdminClient, createSessionClient } from "@/lib/server/appwrite";
-export async function GET(request: NextRequest) {
+import { NextResponse } from "next/server";
+import { createSessionClient } from "@/lib/server/appwrite";
+export async function GET() {
   try {
-    const session = (await cookies()).get("session");
 
     const account = await createSessionClient();
 
@@ -17,7 +15,7 @@ export async function GET(request: NextRequest) {
 
     // gets the current user
     const user = await clientAccount.get();
-    
+
     return NextResponse.json({
       message: "User found",
       success: true,
