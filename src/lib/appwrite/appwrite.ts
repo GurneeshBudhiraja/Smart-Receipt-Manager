@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { Client, Account, Storage, Databases } from "node-appwrite";
 
-// TODO: fix this ts any
+// TODO: fix the type
 export async function createSessionClient() {
   const client = new Client()
     .setEndpoint(process.env.NEXT_APPWRITE_ENDPOINT)

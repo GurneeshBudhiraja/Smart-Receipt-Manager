@@ -11,7 +11,7 @@ export async function GET() {
         success: false
       }, { status: 401 })
     }
-    const { account, db, storage } = session;
+    const { account, db, } = session;
     const { $id } = await account.get()
     const getDocResponse = await getDoc(db, $id, process.env.NEXT_APPWRITE_IMAGE_COLLECTION_ID)
     if (getDocResponse === null) {
@@ -22,6 +22,7 @@ export async function GET() {
       }, { status: 404 })
     }
     const { image_ids }: { image_ids: Array<string> } = getDocResponse;
+
     const data: { category: string, image: string }[] = [];
     image_ids.forEach((image_id) => {
       data.push({
@@ -30,7 +31,7 @@ export async function GET() {
       })
     })
     return NextResponse.json({
-      message: "get-images route",
+      message: "get-images fetch successful",
       success: true,
       data
     }, { status: 200 })
