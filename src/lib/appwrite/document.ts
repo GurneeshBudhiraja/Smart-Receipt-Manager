@@ -1,8 +1,8 @@
-export async function getDoc(db, documentId) {
+export async function getDoc(db, documentId, collectionId) {
   try {
     const doc = await db.getDocument(
       process.env.NEXT_APPWRITE_DB_ID,
-      process.env.NEXT_APPWRITE_IMAGE_COLLECTION_ID,
+      collectionId,
       documentId
     )
     return doc

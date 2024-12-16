@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     const { $id: documentId } = await account.get()
     console.log(documentId);
 
-    const getDocResponse = await getDoc(db, documentId)
+    const getDocResponse = await getDoc(db, documentId, process.env.NEXT_APPWRITE_IMAGE_COLLECTION_ID,)
 
     // if the document does not exist
     if (getDocResponse === null) {
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
     console.log("DELETING IMAGES");
 
     const { storage } = sessionClient;
-    if(uploadedImageResponse) {
+    if (uploadedImageResponse) {
 
       const { $id: uploadedImageId } = uploadedImageResponse;
       await storage.deleteFile(
