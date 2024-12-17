@@ -78,6 +78,7 @@ export default function LoginForm() {
             <Input
               id="email"
               type="email"
+              defaultValue={"testing1@gmail.com"}
               placeholder="m@example.com"
               className={`bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500 ${
                 errors.email ? "border-red-500" : "border-input"
@@ -97,6 +98,7 @@ export default function LoginForm() {
             <Input
               id="password"
               type="password"
+              defaultValue={"testing1password"}
               placeholder="Enter your password"
               {...register("password", {
                 required: { value: true, message: "Password is required" },
