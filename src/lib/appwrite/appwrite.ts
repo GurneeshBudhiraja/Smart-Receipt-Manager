@@ -1,8 +1,8 @@
+import { SessionClient } from "@/types/appwrite.types";
 import { cookies } from "next/headers";
 import { Client, Account, Storage, Databases } from "node-appwrite";
 
-// TODO: fix the type
-export async function createSessionClient() {
+export async function createSessionClient(): Promise<SessionClient> {
   const client = new Client()
     .setEndpoint(process.env.NEXT_APPWRITE_ENDPOINT)
     .setProject(process.env.NEXT_APPWRITE_PROJECT_ID);

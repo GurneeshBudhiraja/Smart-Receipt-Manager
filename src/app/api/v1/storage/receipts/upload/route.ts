@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { uploadImage } from "@/utils/uploadImage";
 import { createAdminClient, createSessionClient } from "@/lib/appwrite/appwrite";
 import { createDoc, getDoc, updateDoc } from "@/lib/appwrite/document";
+import { getImageSummary } from "@/lib/gemini/imageSummary";
+import { toBase64 } from "@/utils/base64convert";
 export async function POST(request: NextRequest) {
   const sessionClient = await createSessionClient();
   let uploadedImageResponse;
@@ -20,11 +22,29 @@ export async function POST(request: NextRequest) {
     }
 
     const data = (await request.formData());
-
-    const imagePath = data.get('image');
+    const imagePath = data.get('image') as File;
     const category = data.get('category');
     const sideNotes = data.get('sidenotes');
-    const receiptText = data.get("receipttext");
+
+    if (!imagePath || !category || !sideNotes) {
+      return NextResponse.json({
+        message: "Please provide all the required data",
+        success: false
+      }, { status: 400 })
+    }
+    console.log(imagePath)
+    return NextResponse.json({
+      message: "Data has been saved successfully",
+      success: true,
+    }, { status: 200 })
+    // TODO: change this later on 
+    const response = await getImageSummary("");
+
+    console.log(response);
+    return NextResponse.json({
+      message: "Data has been saved successfully",
+      success: true,
+    }, { status: 200 });
 
     const { account, storage, db } = sessionClient;
 

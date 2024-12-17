@@ -22,7 +22,7 @@ export async function GET() {
       }, { status: 401 })
     }
 
-    const { db } = await createSessionClient()
+    const { db } = session;
     const getDocResponse = await getDoc(db, id, process.env.NEXT_APPWRITE_NOTES_COLLECTION_ID)
 
     // No document found
