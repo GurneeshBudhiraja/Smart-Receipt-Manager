@@ -11,14 +11,14 @@ export async function middleware(request: NextRequest) {
       const pathName = request.nextUrl.pathname.split('/').filter(Boolean).pop() as string
       headers.set("x-path", pathName);
       return NextResponse.next({ headers })
-    } else if (request.nextUrl.pathname === "/login") {
+    } else if (request.nextUrl.pathname === "/login" || request.nextUrl.pathname === "/signup") {
       // TODO: remove after debug
-      console.log("running middleware on login page")
+      console.log("running middleware on login/signup page")
       const session = await createSessionClient();
       if (session === null) {
         return NextResponse.next()
       } else {
-        return NextResponse.redirect(new URL("/", request.nextUrl))
+        return NextResponse.redirect(new URL("/dashboard/", request.nextUrl))
       }
     }
   } catch (error) {

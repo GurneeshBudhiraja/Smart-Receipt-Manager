@@ -14,25 +14,29 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { LoginWithEmail } from "@/types/auth.types";
 import { useState } from "react";
+import { SignupWithEmail } from "@/types/auth.types"; // Assuming you have this type
 
-export default function LoginForm() {
+export default function SignupForm() {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginWithEmail>();
+    watch,
+  } = useForm<SignupWithEmail>();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
-  async function loginUser(data: LoginWithEmail) {
+  const password = watch("password");
+
+  async function signupUser(data: SignupWithEmail) {
     setLoading(true);
     setError(null);
     try {
-      const loginResponse: AxiosResponse = await axios.post(
-        "/api/v1/auth/login",
+      console.log(data);
+      const signupResponse: AxiosResponse = await axios.post(
+        "/api/v1/auth/signup",
         data,
         {
           headers: {
@@ -40,15 +44,14 @@ export default function LoginForm() {
           },
         }
       );
-      console.log(loginResponse);
-      const { success } = loginResponse.data;
+      const { success } = signupResponse.data;
       if (!success) {
-        setError(loginResponse.data.message);
+        setError(signupResponse.data.message);
       }
-      router.push("/dashboard");
+      router.push("/login");
     } catch (error) {
       if (error instanceof AxiosError) {
-        console.log("Error in login page", error);
+        console.log("Error in signup page", error);
         setError(error.response?.data.message);
       }
     } finally {
@@ -60,17 +63,17 @@ export default function LoginForm() {
     <Card className="w-full max-w-md mx-auto bg-white shadow-lg">
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl font-bold text-gray-900">
-          Login
+          Sign Up
         </CardTitle>
         <CardDescription className="text-gray-600">
-          Enter your credentials to access your account
+          Create an account to get started
         </CardDescription>
       </CardHeader>
       <CardContent>
         {error && (
           <p className="text-red-500 text-sm text-center mb-2">{error}</p>
         )}
-        <form onSubmit={handleSubmit(loginUser)} className="space-y-4">
+        <form onSubmit={handleSubmit(signupUser)} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email" className="text-gray-700">
               Email
@@ -90,6 +93,7 @@ export default function LoginForm() {
               <p className="text-red-500 text-sm">{errors.email.message}</p>
             )}
           </div>
+
           <div className="space-y-2">
             <Label htmlFor="password" className="text-gray-700">
               Password
@@ -100,6 +104,10 @@ export default function LoginForm() {
               placeholder="Enter your password"
               {...register("password", {
                 required: { value: true, message: "Password is required" },
+                minLength: {
+                  value: 6,
+                  message: "Password must be at least 6 characters",
+                },
               })}
               className={`bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500 ${
                 errors.password ? "border-red-500" : "border-input"
@@ -109,26 +117,53 @@ export default function LoginForm() {
               <p className="text-red-500 text-sm">{errors.password.message}</p>
             )}
           </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword" className="text-gray-700">
+              Confirm Password
+            </Label>
+            <Input
+              id="confirmPassword"
+              type="password"
+              placeholder="Confirm your password"
+              {...register("confirmPassword", {
+                required: {
+                  value: true,
+                  message: "Confirm password is required",
+                },
+                validate: (value) =>
+                  value === password || "Passwords do not match",
+              })}
+              className={`bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500 ${
+                errors.confirmPassword ? "border-red-500" : "border-input"
+              }`}
+            />
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-sm">
+                {errors.confirmPassword.message}
+              </p>
+            )}
+          </div>
+
           <Button
             type="submit"
             disabled={loading}
             className={`w-full bg-blue-500 hover:bg-blue-600 text-white  ${
               loading ? "cursor-not-allowed opacity-50" : ""
-            }
-            `}
+            }`}
           >
-            Login
+            Sign Up
           </Button>
         </form>
       </CardContent>
       <CardFooter className="text-center text-sm text-gray-600 w-full">
         <p className="text-center text-sm text-gray-600 w-full">
-          Don&apos;t have an account?{" "}
+          Already have an account?{" "}
           <Link
-            href="/signup"
+            href="/login"
             className="font-semibold text-blue-500 hover:underline"
           >
-            Register here
+            Log in here
           </Link>
         </p>
       </CardFooter>
