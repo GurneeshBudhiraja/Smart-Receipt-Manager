@@ -5,6 +5,7 @@ import { HomeHeader } from "@/components/home-header";
 import { headers } from "next/headers";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 async function page() {
   const headersList = await headers();
   const isLogin = headersList.get("x-is-login") === "true" ? true : false;
@@ -14,17 +15,22 @@ async function page() {
       <HeroSection />
       <FeaturesSection />
       <HowItWorks />
-      <footer>
-        <h2 className="text-3xl font-bold mb-6">
-          Ready to Simplify Your Expense Management?
-        </h2>
-        <p className="text-xl mb-8">
-          Join Smart Expense today and take control of your finances.
-        </p>
-        <Button className="bg-white text-gray-900 hover:bg-gray-100">
-          Sign Up Now
-          <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
+      <footer className="bg-black text-white py-12">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-xl md:text-2xl font-medium mb-4">
+            Simplify Your Expense Management with Smart Expense
+          </h2>
+          <p className="text-base md:text-lg mb-6 leading-relaxed">
+            Take control of your finances, starting today.
+          </p>
+          <Link
+            href={"/login"}
+            className="bg-stone-50 text-gray-900 hover:bg-stone-200 py-2 px-4 rounded-md text-sm md:text-base inline-flex items-center transition-colors duration-200 ease-in-out"
+          >
+            Get Started
+            <ArrowRight size={20} className="ml-1" />
+          </Link>
+        </div>
       </footer>
     </div>
   );

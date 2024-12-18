@@ -26,7 +26,6 @@ export default function LoginForm() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-
   async function loginUser(data: LoginWithEmail) {
     setLoading(true);
     setError(null);
@@ -78,6 +77,7 @@ export default function LoginForm() {
             <Input
               id="email"
               type="email"
+              // TODO: changes this in prod
               defaultValue={"testing1@gmail.com"}
               placeholder="m@example.com"
               className={`bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500 ${
@@ -98,7 +98,8 @@ export default function LoginForm() {
             <Input
               id="password"
               type="password"
-              defaultValue={"testing1password"}
+              // TODO: changes this in prod
+              defaultValue={process.env.NEXT_PUBLIC_TESTING1_PASSWORD}
               placeholder="Enter your password"
               {...register("password", {
                 required: { value: true, message: "Password is required" },
