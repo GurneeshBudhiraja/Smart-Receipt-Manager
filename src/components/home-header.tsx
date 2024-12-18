@@ -35,7 +35,7 @@ export function HomeHeader({
   }
   return (
     <header
-      className={` mt-7 mx-10 mb-2 p-2 ${roboto_mono.className} ${className}`}
+      className={` mt-7 mx-10 mb-2 p-3  ${roboto_mono.className} ${className}`}
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-end h-16 ">
