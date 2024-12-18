@@ -3,7 +3,6 @@ import FeaturesSection from "@/components/features-section";
 import HowItWorks from "@/components/home-how-it-works";
 import { HomeHeader } from "@/components/home-header";
 import { headers } from "next/headers";
-import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 async function page() {

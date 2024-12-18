@@ -1,5 +1,3 @@
-"use client";
-import React from "react";
 import FeatureCard from "./ui/feature-card";
 import { BarChart2, MessageSquare, Receipt, Tag, Upload } from "lucide-react";
 
