@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
-import { inter, roboto_mono } from "@/app/fonts";
+import { roboto_mono } from "@/app/fonts";
 import {
   Tooltip,
   TooltipContent,
@@ -12,7 +12,13 @@ import {
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
-export function HomeHeader({ isLogin }: { isLogin: boolean }) {
+export function HomeHeader({
+  isLogin,
+  className,
+}: {
+  isLogin: boolean;
+  className?: string;
+}) {
   const router = useRouter();
   async function logoutUser() {
     try {
@@ -28,7 +34,9 @@ export function HomeHeader({ isLogin }: { isLogin: boolean }) {
     }
   }
   return (
-    <header className={`bg-white mt-7 mr-10 mb-2 p-2 ${roboto_mono.className}`}>
+    <header
+      className={` mt-7 mx-10 mb-2 p-2 ${roboto_mono.className} ${className}`}
+    >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-end h-16 ">
           <nav className="flex items-center space-x-8 transition-colors duration-100 ease-in-out ">
@@ -79,24 +87,15 @@ export function HomeHeader({ isLogin }: { isLogin: boolean }) {
               </>
             ) : (
               // Get started
-              <TooltipProvider delayDuration={500}>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <Button
-                      variant="outline"
-                      size="lg"
-                      aria-label="User profile"
-                      className=""
-                      asChild
-                    >
-                      <Link href="/login">Get Started</Link>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom" sideOffset={10}>
-                    Get Started
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <Button
+                variant="outline"
+                size="lg"
+                aria-label="User profile"
+                className=""
+                asChild
+              >
+                <Link href="/login">Get Started</Link>
+              </Button>
             )}
           </nav>
         </div>
