@@ -1,6 +1,6 @@
 import HeroSection from "@/components/hero-section";
 import FeaturesSection from "@/components/features-section";
-import HomeWorking from "@/components/home-working";
+import HowItWorks from "@/components/home-how-it-works";
 import { HomeHeader } from "@/components/home-header";
 import { headers } from "next/headers";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,7 @@ async function page() {
       <HomeHeader isLogin={isLogin} className="" />
       <HeroSection />
       <FeaturesSection />
-      <HomeWorking />
+      <HowItWorks />
       <footer>
         <h2 className="text-3xl font-bold mb-6">
           Ready to Simplify Your Expense Management?
