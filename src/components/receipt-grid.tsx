@@ -20,6 +20,7 @@ export default function ReceiptGrid({
           onClick={() => onReceiptClick(receipt)}
         >
           <Image
+            loading="lazy"
             className={`${receipt.imageUrl ? "" : "filter opacity-40"}`}
             src={receipt.imageUrl || "/placeholder.jpeg"}
             alt={`Receipt image`}

@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import ReceiptGrid from "@/components/receipt-grid";
@@ -14,14 +13,6 @@ export interface Receipt {
   date: string;
   amount: string;
 }
-// {
-//   id: "6",
-//   imageUrl: "/placeholder.svg?height=300&width=200",
-//   tags: ["transportation"],
-//   sideNotes: "Gas refill",
-//   date: "2023-03-25",
-//   amount: 40.2,
-// },
 
 export default function ReceiptsPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -30,6 +21,13 @@ export default function ReceiptsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   useEffect(() => {
     getUserReceipts();
+
+    return () => {
+      setReceipts([]);
+      setIsLoading(true);
+      setSelectedReceipt(null);
+      setSearchTerm("");
+    };
   }, []);
 
   const getUserReceipts = async () => {
@@ -47,21 +45,8 @@ export default function ReceiptsPage() {
       const filteredResponses = responses.map((response) => {
         return response.data?.data;
       });
-
+      console.log(filteredResponses);
       setReceipts([...receipts, ...filteredResponses]);
-
-      // const receipt = await axios.get(`/api/v1/storage/receipts/random`);
-
-      // const { id, category, sideNotes, date, amount, imageUrl } =
-      //   receipt.data.data;
-      // console.log({
-      //   id,
-      //   imageUrl,
-      //   category,
-      //   sideNotes,
-      //   date,
-      //   amount,
-      // });
     } catch (error) {
       console.log("error in getting all the receipts", error);
     } finally {
@@ -77,27 +62,41 @@ export default function ReceiptsPage() {
   );
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Receipts</h1>
-      <div className="flex items-center space-x-4 mb-6">
-        <Input
-          type="text"
-          placeholder="Search receipts..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="max-w-md  focus-visible:ring-blue-600 focus-visible:ring-1 tracking-wide border-gray-400 "
-        />
-      </div>
-      <ReceiptGrid
-        receipts={filteredReceipts}
-        onReceiptClick={setSelectedReceipt}
-      />
-      {selectedReceipt && (
-        <ReceiptModal
-          receipt={selectedReceipt}
-          onClose={() => setSelectedReceipt(null)}
-        />
+    <div className={`container mx-auto px-4 py-8 `}>
+      {/* loader */}
+      {isLoading && (
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2  text-xl font-medium z-50 opacity-100 transition-all ease-in-out duration-200">
+          Loading...
+        </div>
       )}
+      <div
+        className={`${
+          isLoading ? "opacity-25" : "opacity-100"
+        } transition-opacity ease-in-out duration-200`}
+      >
+        <h1 className="text-3xl font-bold mb-6">Receipts</h1>
+        <div className="flex items-center space-x-4 mb-6">
+          <Input
+            type="text"
+            placeholder="Search receipts..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="max-w-md  focus-visible:ring-blue-600 focus-visible:ring-1 tracking-wide border-gray-400 "
+            disabled={isLoading}
+          />
+        </div>
+
+        <ReceiptGrid
+          receipts={filteredReceipts}
+          onReceiptClick={setSelectedReceipt}
+        />
+        {selectedReceipt && (
+          <ReceiptModal
+            receipt={selectedReceipt}
+            onClose={() => setSelectedReceipt(null)}
+          />
+        )}
+      </div>
     </div>
   );
 }

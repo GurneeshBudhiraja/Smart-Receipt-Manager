@@ -16,14 +16,15 @@ interface ReceiptModalProps {
 
 export default function ReceiptModal({ receipt, onClose }: ReceiptModalProps) {
   return (
-    <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+    <Dialog open={true} onOpenChange={onClose} >
+      <DialogContent className="max-w-sm overflow-scroll">
         <DialogHeader>
           <DialogTitle>Receipt Details</DialogTitle>
         </DialogHeader>
         <div className="mt-4">
-          <div className="relative aspect-[3/4] overflow-hidden rounded-lg mb-4">
+          <div className="relative aspect-[3/4] overflow-hidden rounded-lg mb-4 ">
             <Image
+              loading="lazy"
               src={receipt.imageUrl || "/placeholder.jpeg"}
               alt={`Receipt image`}
               layout="fill"
