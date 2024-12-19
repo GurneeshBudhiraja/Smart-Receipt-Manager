@@ -16,7 +16,7 @@ export default function ReceiptGrid({
       {receipts.map((receipt) => (
         <div
           key={receipt.id}
-          className="relative aspect-[3/4] overflow-hidden rounded-lg shadow-md cursor-pointer transition-transform hover:scale-105"
+          className="relative aspect-[3/4] overflow-hidden rounded-lg drop-shadow-md cursor-pointer transition-transform duration-200 ease-in-out hover:scale-[1.02] group border border-gray-300"
           onClick={() => onReceiptClick(receipt)}
         >
           <Image
@@ -25,7 +25,7 @@ export default function ReceiptGrid({
             layout="fill"
             objectFit="cover"
           />
-          <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-2">
+          <div className="absolute bottom-0 left-0 right-0 bg-blue-500 group-hover:bg-blue-600 text-white p-2 transition-colors ease-in-out duration-200">
             <p className="text-sm font-semibold">{receipt.date}</p>
             <p className="text-xs">${receipt.amount.toFixed(2)}</p>
           </div>
