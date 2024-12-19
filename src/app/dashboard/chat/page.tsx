@@ -16,10 +16,12 @@ export default function ChatInterface() {
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({
       behavior: "smooth",
     });
+    inputRef.current?.focus();
   }, [messages]);
 
   const mockMessageToAI = async (): Promise<Record<string, string>> => {
@@ -108,6 +110,7 @@ export default function ChatInterface() {
         <div className="flex justify-center items-center space-x-2 max-w-6xl mx-auto lg:border-gray-300 lg:border p-4 rounded-md h-20">
           <Input
             type="text"
+            ref={inputRef}
             disabled={isLoading}
             autoFocus
             value={inputMessage}
