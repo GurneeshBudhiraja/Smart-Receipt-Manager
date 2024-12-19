@@ -2,56 +2,55 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { createSessionClient } from './lib/appwrite/appwrite'
 
-// This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
   try {
     const session = await createSessionClient();
-    if (request.nextUrl.pathname.startsWith('/api/v1/storage/receipts')) {
-      console.log("running middleware")
-      const headers = new Headers(request.headers)
-      const id = request.nextUrl.pathname.split('/').filter(Boolean).pop() as string
+    const { pathname } = request.nextUrl;
+
+    // Handle requests to the login and signup pages
+    if (pathname === "/login" || pathname === "/signup") {
+      if (session !== null) {
+        return NextResponse.redirect(new URL("/dashboard/", request.nextUrl));  // Redirect if already logged in
+      }
+      return NextResponse.next();
+    }
+
+    // Handle dashboard and its subpages
+    if (pathname.startsWith("/dashboard")) {
+      if (session === null) {
+        return NextResponse.redirect(new URL("/login", request.nextUrl));  // Redirect to login if not logged in
+      }
+      return NextResponse.next();
+    }
+
+    // Handle receipts API path (if needed)
+    if (pathname.startsWith('/api/v1/storage/receipts')) {
+      const headers = new Headers(request.headers);
+      const id = pathname.split('/').filter(Boolean).pop() as string;
       headers.set("x-path", id);
-      return NextResponse.next({ headers })
-    } else if (request.nextUrl.pathname === "/login" || request.nextUrl.pathname === "/signup") {
-      // TODO: remove after debug
-      console.log("running middleware on login/signup page")
-      if (session === null) {
-        return NextResponse.next()
-      } else {
-        return NextResponse.redirect(new URL("/dashboard/", request.nextUrl))
-      }
-    } else if (request.nextUrl.pathname === "/dashboard") {
-      console.log("running middleware on dashboard page")
-      if (session === null) {
-        return NextResponse.redirect(new URL("/login", request.nextUrl))
-      } else {
-        return NextResponse.next()
-      }
+      return NextResponse.next({ headers });
     }
-    else {
-      console.log("running else middleware")
-      const headers = new Headers(request.headers)
-      if (session === null) {
-        headers.set("x-is-login", "false");
-      } else {
-        headers.set("x-is-login", "true");
-      }
-      return NextResponse.next({ headers })
-    }
+
+    // Set login status header for other requests
+    const headers = new Headers(request.headers);
+    headers.set("x-is-login", session === null ? "false" : "true");
+    return NextResponse.next({ headers });
+
   } catch (error) {
-    console.error("Errror in middlware", error)
+    console.error("Error in middleware:", error);
     return NextResponse.json({
       message: "Something went wrong",
       success: false
-    }, { status: 500 })
+    }, { status: 500 });
   }
 }
 
-// See "Matching Paths" below to learn more
+// Middleware matcher configuration
 export const config = {
   matcher: [
     '/api/:path*',
     '/:path',
-    "/"
+    "/",
+    "/dashboard/:path*"
   ],
 }

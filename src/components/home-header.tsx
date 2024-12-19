@@ -26,6 +26,7 @@ export function HomeHeader({
       const logoutResponse = await axios.post("/api/v1/auth/logout");
       if (logoutResponse.status === 200) {
         router.push("/");
+        router.refresh();
       } else {
         console.error("Error in logging out user", logoutResponse);
       }
