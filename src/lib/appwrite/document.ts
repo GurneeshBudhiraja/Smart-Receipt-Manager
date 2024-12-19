@@ -40,7 +40,7 @@ export async function updateDoc(db, storage, category, uploadedImageId, image_id
       process.env.NEXT_APPWRITE_IMAGE_COLLECTION_ID,
       documentId,
       {
-        "image_ids": [`${category}_${uploadedImageId}`, ...image_ids,]
+        "image_ids": [`${uploadedImageId}`, ...image_ids,]
       }
     )
   } catch (error) {

@@ -1,79 +1,77 @@
 "use client";
 
-import React, { useState } from "react";
-import { Grid } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import React, { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import ReceiptGrid from "@/components/receipt-grid";
 import ReceiptModal from "@/components/receipt-modal";
+import axios from "axios";
 
 export interface Receipt {
   id: string;
   imageUrl: string;
-  tags: string[];
+  category: string[];
   sideNotes: string;
   date: string;
-  amount: number;
+  amount: string;
 }
-
-const receipts: Receipt[] = [
-  {
-    id: "1",
-    imageUrl: "/placeholder.svg?height=300&width=200",
-    tags: ["groceries", "food"],
-    sideNotes: "Weekly shopping",
-    date: "2023-04-15",
-    amount: 85.5,
-  },
-  {
-    id: "2",
-    imageUrl: "/placeholder.svg?height=300&width=200",
-    tags: ["electronics"],
-    sideNotes: "New headphones",
-    date: "2023-04-10",
-    amount: 199.99,
-  },
-  {
-    id: "3",
-    imageUrl: "/placeholder.svg?height=300&width=200",
-    tags: ["clothing"],
-    sideNotes: "Summer clothes",
-    date: "2023-04-05",
-    amount: 120.75,
-  },
-  {
-    id: "4",
-    imageUrl: "/placeholder.svg?height=300&width=200",
-    tags: ["restaurant", "food"],
-    sideNotes: "Dinner with friends",
-    date: "2023-04-02",
-    amount: 65.3,
-  },
-  {
-    id: "5",
-    imageUrl: "/placeholder.svg?height=300&width=200",
-    tags: ["utilities"],
-    sideNotes: "Electricity bill",
-    date: "2023-03-28",
-    amount: 95.0,
-  },
-  {
-    id: "6",
-    imageUrl: "/placeholder.svg?height=300&width=200",
-    tags: ["transportation"],
-    sideNotes: "Gas refill",
-    date: "2023-03-25",
-    amount: 40.2,
-  },
-];
+// {
+//   id: "6",
+//   imageUrl: "/placeholder.svg?height=300&width=200",
+//   tags: ["transportation"],
+//   sideNotes: "Gas refill",
+//   date: "2023-03-25",
+//   amount: 40.2,
+// },
 
 export default function ReceiptsPage() {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [receipts, setReceipts] = useState<Receipt[]>([]);
   const [selectedReceipt, setSelectedReceipt] = useState<Receipt | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  useEffect(() => {
+    getUserReceipts();
+  }, []);
+
+  const getUserReceipts = async () => {
+    try {
+      const response = await axios.get("/api/v1/storage/receipts/images");
+      const image_ids = response?.data?.image_ids;
+
+      const imageRequests = image_ids.map((image: string) =>
+        axios.get(`/api/v1/storage/receipts/${image}`)
+      );
+
+      const responses: Array<Record<string, string | Record<string, string>>> =
+        await Promise.all(imageRequests);
+
+      const filteredResponses = responses.map((response) => {
+        return response.data?.data;
+      });
+
+      setReceipts([...receipts, ...filteredResponses]);
+
+      // const receipt = await axios.get(`/api/v1/storage/receipts/random`);
+
+      // const { id, category, sideNotes, date, amount, imageUrl } =
+      //   receipt.data.data;
+      // console.log({
+      //   id,
+      //   imageUrl,
+      //   category,
+      //   sideNotes,
+      //   date,
+      //   amount,
+      // });
+    } catch (error) {
+      console.log("error in getting all the receipts", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const filteredReceipts = receipts.filter(
     (receipt) =>
-      receipt.tags.some((tag) =>
+      receipt.category.some((tag) =>
         tag.toLowerCase().includes(searchTerm.toLowerCase())
       ) || receipt.sideNotes.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -87,11 +85,8 @@ export default function ReceiptsPage() {
           placeholder="Search receipts..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="max-w-sm"
+          className="max-w-md  focus-visible:ring-blue-600 focus-visible:ring-1 tracking-wide border-gray-400 "
         />
-        <Button variant="outline" size="icon">
-          <Grid className="h-4 w-4" />
-        </Button>
       </div>
       <ReceiptGrid
         receipts={filteredReceipts}

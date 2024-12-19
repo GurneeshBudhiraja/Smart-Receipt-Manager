@@ -4,6 +4,8 @@ import { createAdminClient, createSessionClient } from "@/lib/appwrite/appwrite"
 import { createDoc, getDoc, updateDoc } from "@/lib/appwrite/document";
 import { getImageSummary } from "@/lib/gemini/imageSummary";
 import { toBase64 } from "@/utils/base64convert";
+import { SessionClient } from "@/types/appwrite.types";
+
 export async function POST(request: NextRequest) {
   const sessionClient = await createSessionClient();
   let uploadedImageResponse;
@@ -23,8 +25,18 @@ export async function POST(request: NextRequest) {
 
     const data = (await request.formData());
     const imagePath = data.get('image') as File;
-    const category = data.get('category');
+
+    const categoryValue = data.get('category');
+    let category: string[] | string = []
+    if (typeof categoryValue === "string") {
+      category = categoryValue.split(",");
+    } else {
+      category = ""
+    }
+
     const sideNotes = data.get('sidenotes');
+    const amount = data.get('amount');
+
 
     if (!imagePath || !category || !sideNotes) {
       return NextResponse.json({
@@ -33,22 +45,13 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
     console.log(imagePath)
-    return NextResponse.json({
-      message: "Data has been saved successfully",
-      success: true,
-    }, { status: 200 })
-    // TODO: change this later on 
-    const response = await getImageSummary("");
 
-    console.log(response);
-    return NextResponse.json({
-      message: "Data has been saved successfully",
-      success: true,
-    }, { status: 200 });
+    // const response = await getImageSummary("");
+    // console.log(response);
+
 
     const { account, storage, db } = sessionClient;
 
-    // TODO: remove this functionality from here and instead upload the image directly from the frontend to handle big image files
     uploadedImageResponse = await uploadImage(storage, imagePath);
 
     // if the image is not uploaded
@@ -75,7 +78,7 @@ export async function POST(request: NextRequest) {
         await createDoc(
           db, storage, documentId, uploadedImageId, process.env.NEXT_APPWRITE_IMAGE_COLLECTION_ID,
           {
-            "image_ids": [`${category}_${uploadedImageId}`],
+            "image_ids": [`${uploadedImageId}`],
           }
         )
       // not able to create a doc
@@ -110,6 +113,8 @@ export async function POST(request: NextRequest) {
         {
           category,
           sidenotes: sideNotes,
+          amount,
+          date: new Date().toISOString().split("T")[0]
         }
       )
     if (createDocResp === null) {
@@ -130,9 +135,8 @@ export async function POST(request: NextRequest) {
     console.error(error);
     console.log("DELETING IMAGES");
 
-    const { storage } = sessionClient;
+    const { storage } = sessionClient!;
     if (uploadedImageResponse) {
-
       const { $id: uploadedImageId } = uploadedImageResponse;
       await storage.deleteFile(
         process.env.NEXT_APPWRITE_BUCKET_ID,

@@ -33,11 +33,18 @@ export async function GET() {
         data: []
       }, { status: 404 })
     }
-
+    const { amount, $id, category, date, sidenotes } = getDocResponse;
     return NextResponse.json({
       message: "Receipt data found",
       success: true,
-      data: getDocResponse
+      data: {
+        id: $id,
+        imageUrl: "",
+        category,
+        sideNotes: sidenotes,
+        date,
+        amount,
+      }
     }, { status: 200 }
     )
   } catch (error) {

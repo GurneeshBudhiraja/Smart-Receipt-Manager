@@ -23,17 +23,10 @@ export async function GET() {
     }
     const { image_ids }: { image_ids: Array<string> } = getDocResponse;
 
-    const data: { category: string, image: string }[] = [];
-    image_ids.forEach((image_id) => {
-      data.push({
-        category: image_id.split("_")[0],
-        image: image_id.split("_")[1]
-      })
-    })
     return NextResponse.json({
       message: "get-images fetch successful",
       success: true,
-      data
+      image_ids,
     }, { status: 200 })
   } catch (error) {
     console.log("error in receipts/get-images route", error)
