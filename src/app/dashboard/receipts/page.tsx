@@ -36,16 +36,15 @@ export default function ReceiptsPage() {
       const image_ids = response?.data?.image_ids;
 
       const imageRequests = image_ids.map((image: string) =>
-        axios.get(`/api/v1/storage/receipts/${image}`)
+        axios.get(`/api/v1/storage/receipts/data/${image}`)
       );
 
       const responses: Array<Record<string, string | Record<string, string>>> =
         await Promise.all(imageRequests);
 
-      const filteredResponses = responses.map((response) => {
-        return response.data?.data;
-      });
-      console.log(filteredResponses);
+      const filteredResponses = responses.map(
+        (response) => response.data?.data
+      );
       setReceipts([...receipts, ...filteredResponses]);
     } catch (error) {
       console.log("error in getting all the receipts", error);
@@ -85,7 +84,6 @@ export default function ReceiptsPage() {
             disabled={isLoading}
           />
         </div>
-
         <ReceiptGrid
           receipts={filteredReceipts}
           onReceiptClick={setSelectedReceipt}
