@@ -25,6 +25,7 @@ export async function POST(request: NextRequest) {
 
     const data = (await request.formData());
     const imagePath = data.get('image') as File;
+    console.log(imagePath)
 
     const categoryValue = data.get('category');
     let category: string[] | string = []

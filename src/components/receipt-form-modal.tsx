@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import Image from "next/image";
-import { Camera, ImageIcon } from "lucide-react";
+import { Camera, ImageIcon, X } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { getImageSummary } from "@/lib/gemini/imageSummary";
+import axios from "axios";
 
 interface ReceiptForm {
   onClose: () => void;
@@ -22,12 +23,17 @@ export default function ReceiptFormModal({ onClose }: ReceiptForm) {
   const [image, setImage] = useState<string | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [currentTag, setCurrentTag] = useState("");
+  const [amount, setAmount] = useState("");
+  const [sideNotes, setSideNotes] = useState("");
+  const [receiptText, setReceiptText] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [formFile, setFormFile] = useState<File | "">("");
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
-      const file = e.target.files?.[0];
+      const file = e.target.files?.[0] as File;
+      setFormFile(file);
       if (file) {
         const reader = new FileReader();
         const mimeType = file.type;
@@ -42,18 +48,40 @@ export default function ReceiptFormModal({ onClose }: ReceiptForm) {
             .replace(/^data:image\/\w+;base64,/, "")
             .toString();
 
-          const geminiRespone = await getImageSummary(
-            base64EncodedImage as string,
-            mimeType
+          const geminiRespone = JSON.parse(
+            (await getImageSummary(
+              base64EncodedImage as string,
+              mimeType
+            )) as string
           );
+
+          // Fix the types issue
+          const { isValidReceipt, price, receiptText, tags } = geminiRespone;
           console.log(geminiRespone);
+          // checks if the receipt is valid or not
+          if (!isValidReceipt) {
+            console.error("Invalid receipt detected, skipping summary");
+            setImage(null);
+            setIsLoading(false);
+            return;
+          }
+
+          // updating the state with gemini response
+          setTags(tags);
+          setAmount(price);
           setIsLoading(false);
+          setReceiptText(receiptText);
         };
       }
     } catch (error) {
       console.log(error);
       setImage(null);
+      setFormFile("");
+      setTags([]);
+      setAmount("");
       setIsLoading(false);
+      setSideNotes("");
+      setReceiptText("");
     }
   };
 
@@ -148,11 +176,11 @@ export default function ReceiptFormModal({ onClose }: ReceiptForm) {
             </Label>
             <Input
               id="amount"
-              type="number"
-              step="0.01"
               placeholder="Enter amount"
               className="border-gray-300 focus:ring-blue-500 focus:border-blue-500"
               disabled={isLoading}
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
             />
           </div>
           <div>
@@ -184,7 +212,7 @@ export default function ReceiptFormModal({ onClose }: ReceiptForm) {
                     onClick={() => handleRemoveTag(tag)}
                     className="ml-1 text-gray-500 hover:text-gray-700"
                   >
-                    ×
+                    <X />
                   </button>
                 </Badge>
               ))}
@@ -199,6 +227,8 @@ export default function ReceiptFormModal({ onClose }: ReceiptForm) {
             </Label>
             <Textarea
               id="side-notes"
+              value={sideNotes}
+              onChange={(e) => setSideNotes(e.target.value)}
               placeholder="Enter any additional notes"
               className="border-gray-300 focus:ring-blue-500 focus:border-blue-500"
             />
@@ -207,6 +237,36 @@ export default function ReceiptFormModal({ onClose }: ReceiptForm) {
             type="submit"
             className="w-full bg-blue-500 hover:bg-blue-600 text-white"
             disabled={isLoading}
+            onClick={async () => {
+              try {
+                const appwriteUploadDataResponse = await axios.post(
+                  "api/v1/storage/receipts/upload",
+                  {
+                    image: formFile,
+                    category: tags[0],
+                    sidenotes: sideNotes.trim(),
+                    amount,
+                  },{
+                    headers: {
+                      "Content-Type": "multipart/form-data",
+                    },
+                  }
+                );
+                console.log("Successfully uploaded");
+                console.log(appwriteUploadDataResponse);
+              } catch (error) {
+                console.log("error in saving receipt invo", error);
+                onClose();
+              } finally {
+                setIsLoading(false);
+                setTags([]);
+                setAmount("");
+                setImage(null);
+                setFormFile("");
+                setSideNotes("");
+                setReceiptText("");
+              }
+            }}
           >
             Save Receipt
           </Button>
