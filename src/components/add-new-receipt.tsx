@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import React, { useState } from "react";
 import ReceiptFormModal from "./receipt-form-modal";
 
-function ReceiptForm() {
+function AddReceiptForm() {
   const pathname = usePathname();
   const [showModal, setShowModal] = useState(false);
   return (
@@ -24,4 +24,4 @@ function ReceiptForm() {
   );
 }
 
-export default ReceiptForm;
+export default AddReceiptForm;

@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { uploadImage } from "@/utils/uploadImage";
-import { createAdminClient, createSessionClient } from "@/lib/appwrite/appwrite";
+import { createSessionClient } from "@/lib/appwrite/appwrite";
 import { createDoc, getDoc, updateDoc } from "@/lib/appwrite/document";
-import { getImageSummary } from "@/lib/gemini/imageSummary";
-import { toBase64 } from "@/utils/base64convert";
-import { SessionClient } from "@/types/appwrite.types";
+import { createEmbedding } from "@/lib/gemini/embeddings";
+import { deleteVector, insertVector } from "@/lib/pinecone/pinecone";
+import { ID } from "node-appwrite";
 
 export async function POST(request: NextRequest) {
   const sessionClient = await createSessionClient();
   let uploadedImageResponse;
+  const vectorDbDocId = ID.unique();
   try {
     // Checks if the user is logged in
     if (!sessionClient) {
@@ -22,36 +23,46 @@ export async function POST(request: NextRequest) {
         }
       )
     }
+    const { account, storage, db } = sessionClient;
+    const { $id: userId } = await account.get();
 
     const data = (await request.formData());
     const imagePath = data.get('image') as File;
-    console.log(imagePath)
-
-    const categoryValue = data.get('category');
-    let category: string[] | string = []
-    if (typeof categoryValue === "string") {
-      category = categoryValue.split(",");
-    } else {
-      category = ""
-    }
-
+    const category = data.get('category') as string;
     const sideNotes = data.get('sidenotes');
     const amount = data.get('amount');
+    const receiptText = data.get('receipttext') as string;
+    const date = data.get('date');
 
 
-    if (!imagePath || !category || !sideNotes) {
+    if (!imagePath || !category || !receiptText) {
       return NextResponse.json({
         message: "Please provide all the required data",
         success: false
       }, { status: 400 })
     }
-    console.log(imagePath)
 
-    // const response = await getImageSummary("");
-    // console.log(response);
+    // Generates vector representation of the receit text
+    const receiptTextVector = await createEmbedding(receiptText)
+    console.log(receiptTextVector)
+    if (receiptTextVector === null || receiptTextVector.length === 0) {
+      console.error("Error in creating embedding")
+      return NextResponse.json({
+        message: "Something went wrong. Please try again",
+        success: false
+      }, { status: 500 })
+    }
+    const vectorDBInsertResponse = await insertVector(vectorDbDocId, userId, receiptTextVector, {
+      receiptText: `${receiptText} I have some sidenotes to add ${sideNotes} Tag/category of the receipt/ purchase is ${category}. The date of the purchase is ${date}`,
+    },)
+    console.log(vectorDBInsertResponse)
+    if (!vectorDBInsertResponse.success) {
+      return NextResponse.json({
+        success: false,
+        message: "Error inserting vector into vector store"
+      }, { status: 500 })
+    }
 
-
-    const { account, storage, db } = sessionClient;
 
     uploadedImageResponse = await uploadImage(storage, imagePath);
 
@@ -91,6 +102,7 @@ export async function POST(request: NextRequest) {
           }, { status: 500 }
         )
       }
+      console.log(createDocResp)
     } else {
       // updates the existing document
       const { image_ids } = getDocResponse;
@@ -135,8 +147,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error(error);
     console.log("DELETING IMAGES");
-
-    const { storage } = sessionClient!;
+    const { account, storage } = sessionClient!;
     if (uploadedImageResponse) {
       const { $id: uploadedImageId } = uploadedImageResponse;
       await storage.deleteFile(
@@ -145,6 +156,11 @@ export async function POST(request: NextRequest) {
       )
       console.log("IMAGE DELETED FROM STORAGE");
     }
+    const { $id: userId } = await account.get()
+
+    console.log("Deleting vector from vector db")
+    await deleteVector(userId, vectorDbDocId)
+    console.log("vector deleted successfully")
     return NextResponse.json(
       {
         message: "Error uploading image",

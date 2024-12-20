@@ -29,7 +29,7 @@ export default function ReceiptGrid({
           />
           <div className="absolute bottom-0 left-0 right-0 bg-blue-500 group-hover:bg-blue-600 text-white p-2 transition-colors ease-in-out duration-200">
             <p className="text-sm font-semibold">{receipt.date}</p>
-            <p className="text-xs">{receipt.amount}</p>
+            <p className="text-xs">{receipt.amount || "N/A"}</p>
           </div>
         </div>
       ))}

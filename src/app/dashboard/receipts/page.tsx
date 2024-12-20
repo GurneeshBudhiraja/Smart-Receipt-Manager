@@ -8,7 +8,7 @@ import axios from "axios";
 export interface Receipt {
   id: string;
   imageUrl: string;
-  category: string[];
+  category: string;
   sideNotes: string;
   date: string;
   amount: string;
@@ -21,7 +21,7 @@ export default function ReceiptsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   useEffect(() => {
     getUserReceipts();
-
+    console.log("this is running");
     return () => {
       setReceipts([]);
       setIsLoading(true);
@@ -55,9 +55,8 @@ export default function ReceiptsPage() {
 
   const filteredReceipts = receipts.filter(
     (receipt) =>
-      receipt.category.some((tag) =>
-        tag.toLowerCase().includes(searchTerm.toLowerCase())
-      ) || receipt.sideNotes.toLowerCase().includes(searchTerm.toLowerCase())
+      receipt.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      receipt.sideNotes.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (

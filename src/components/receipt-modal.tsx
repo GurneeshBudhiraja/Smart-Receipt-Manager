@@ -16,7 +16,7 @@ interface ReceiptModalProps {
 
 export default function ReceiptModal({ receipt, onClose }: ReceiptModalProps) {
   return (
-    <Dialog open={true} onOpenChange={onClose} >
+    <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="max-w-sm overflow-scroll">
         <DialogHeader>
           <DialogTitle>Receipt Details</DialogTitle>
@@ -37,15 +37,13 @@ export default function ReceiptModal({ receipt, onClose }: ReceiptModalProps) {
               <strong>Date:</strong> {receipt.date}
             </p>
             <p>
-              <strong>Amount:</strong> {receipt.amount}
+              <strong>Amount:</strong> {receipt.amount || "N/A"}
             </p>
             <div>
               <strong>Tags:</strong>{" "}
-              {receipt.category.map((tag) => (
-                <Badge key={tag} variant="secondary" className="mr-1">
-                  {tag}
-                </Badge>
-              ))}
+              <Badge variant="secondary" className="mr-1">
+                {receipt.category}
+              </Badge>
             </div>
             <p>
               <strong>Side Notes:</strong> {receipt.sideNotes}

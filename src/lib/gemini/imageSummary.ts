@@ -3,8 +3,7 @@ import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 // TODO: fix the type issue
 export async function getImageSummary(base64Image: string, mimeType: string) {
   try {
-    // Remove this in production
-    const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
+    const genAI = new GoogleGenerativeAI(process.env.NEXT_GEMINI_API_KEY);
 
 
     const schema = {
@@ -16,9 +15,14 @@ export async function getImageSummary(base64Image: string, mimeType: string) {
           description: "Is the image shown of a valid receipt where the text and items on the receipt are clearly visible?",
           nullable: false,
         },
+        date: {
+          type: SchemaType.STRING,
+          description: "The date the receipt was made. Only the date and not the time.",
+          nullable: false,
+        },
         tags: {
           type: SchemaType.ARRAY,
-          description: "If the receipt is valid, provide a list of tags.  Tags should be from the following options: 'Entertainment', 'Groceries', 'Dining out', 'Transportation', 'Housing', 'Utilities', 'Miscellaneous', 'Health'.",
+          description: "If the receipt is valid, provide a list of tags.  Only 1 tag should be return from the following options: 'Entertainment', 'Groceries', 'Dining out', 'Transportation', 'Housing', 'Utilities', 'Miscellaneous', 'Health'.",
           items: { type: SchemaType.STRING },
           nullable: true,
         },
@@ -29,7 +33,7 @@ export async function getImageSummary(base64Image: string, mimeType: string) {
         },
         receiptText: {
           type: SchemaType.STRING,
-          description: "A short text summarizing the receipt information, including purchased items, date, location, amount, and any other relevant details.",
+          description: "A text summarizing each and every thing mentioned in the receipt, including purchased items, date, location, amount, and any other relevant details. Make sure to mention the total amount, select a proper tag from the following options: 'Entertainment', 'Groceries', 'Dining out', 'Transportation', 'Housing', 'Utilites',  'Miscellaneous', 'Health' ",
           nullable: true,
         },
       },

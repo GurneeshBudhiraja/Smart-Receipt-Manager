@@ -12,17 +12,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { getImageSummary } from "@/lib/gemini/imageSummary";
 import axios from "axios";
+import { convertToBase64 } from "@/utils/toBase64";
+import { useRouter } from "next/navigation";
 
 interface ReceiptForm {
   onClose: () => void;
 }
 
 export default function ReceiptFormModal({ onClose }: ReceiptForm) {
+  const router = useRouter();
   const [image, setImage] = useState<string | null>(null);
-  const [tags, setTags] = useState<string[]>([]);
   const [currentTag, setCurrentTag] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
+  const [receiptDate, setReceiptDate] = useState("");
   const [amount, setAmount] = useState("");
   const [sideNotes, setSideNotes] = useState("");
   const [receiptText, setReceiptText] = useState("");
@@ -32,56 +35,56 @@ export default function ReceiptFormModal({ onClose }: ReceiptForm) {
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
+      setIsLoading(true);
       const file = e.target.files?.[0] as File;
+      const base64Image = (await convertToBase64(file)) as string;
+      // To show in the browser
+      setImage(base64Image);
+      // state for sending file in the backend
       setFormFile(file);
-      if (file) {
-        const reader = new FileReader();
-        const mimeType = file.type;
-        reader.readAsDataURL(file);
-        reader.onloadend = async () => {
-          setImage(reader.result as string);
-          setIsLoading(true);
-          console.log("sending response to gemini");
+      const base64EncodedImage = base64Image.replace(
+        /^data:image\/\w+;base64,/,
+        ""
+      );
 
-          // Fix the types issue
-          const base64EncodedImage = reader.result
-            .replace(/^data:image\/\w+;base64,/, "")
-            .toString();
+      // gets the image description from the Gemini
+      const imageDescription = await axios.post(
+        "/api/v1/ai/image/description",
+        {
+          image: base64EncodedImage,
+          mimeType: file.type,
+        },
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
-          const geminiRespone = JSON.parse(
-            (await getImageSummary(
-              base64EncodedImage as string,
-              mimeType
-            )) as string
-          );
-
-          // Fix the types issue
-          const { isValidReceipt, price, receiptText, tags } = geminiRespone;
-          console.log(geminiRespone);
-          // checks if the receipt is valid or not
-          if (!isValidReceipt) {
-            console.error("Invalid receipt detected, skipping summary");
-            setImage(null);
-            setIsLoading(false);
-            return;
-          }
-
-          // updating the state with gemini response
-          setTags(tags);
-          setAmount(price);
-          setIsLoading(false);
-          setReceiptText(receiptText);
-        };
+      const { isValidReceipt, price, receiptText, tags, date } =
+        imageDescription.data.data;
+      console.log(imageDescription.data.data);
+      if (!isValidReceipt) {
+        throw new Error("Image is not a valid receipt");
       }
+      setTags(tags);
+      setAmount(price);
+      setReceiptText(receiptText);
+      setReceiptDate(() => {
+        return date ?? "";
+      });
+      return;
     } catch (error) {
       console.log(error);
       setImage(null);
       setFormFile("");
       setTags([]);
       setAmount("");
-      setIsLoading(false);
       setSideNotes("");
       setReceiptText("");
+    } finally {
+      setIsLoading(false);
+      setReceiptDate("");
     }
   };
 
@@ -103,6 +106,43 @@ export default function ReceiptFormModal({ onClose }: ReceiptForm) {
         captureMethod === "camera" ? "environment" : ""
       );
       fileInputRef.current.click();
+    }
+  };
+
+  const saveReciptData = async () => {
+    try {
+      setIsLoading(true);
+      const appwriteUploadDataResponse = await axios.post(
+        "/api/v1/storage/receipts/upload",
+        {
+          image: formFile,
+          category: tags[0],
+          sidenotes: sideNotes.trim(),
+          amount,
+          receipttext: receiptText,
+          date: receiptDate,
+        },
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log("Successfully uploaded");
+      console.log(appwriteUploadDataResponse);
+      router.push("/dashboard/receipts");
+      router.refresh();
+    } catch (error) {
+      console.log("error in saving receipt invo", error);
+      onClose();
+    } finally {
+      setIsLoading(false);
+      setTags([]);
+      setAmount("");
+      setImage(null);
+      setFormFile("");
+      setSideNotes("");
+      setReceiptText("");
     }
   };
 
@@ -237,36 +277,7 @@ export default function ReceiptFormModal({ onClose }: ReceiptForm) {
             type="submit"
             className="w-full bg-blue-500 hover:bg-blue-600 text-white"
             disabled={isLoading}
-            onClick={async () => {
-              try {
-                const appwriteUploadDataResponse = await axios.post(
-                  "api/v1/storage/receipts/upload",
-                  {
-                    image: formFile,
-                    category: tags[0],
-                    sidenotes: sideNotes.trim(),
-                    amount,
-                  },{
-                    headers: {
-                      "Content-Type": "multipart/form-data",
-                    },
-                  }
-                );
-                console.log("Successfully uploaded");
-                console.log(appwriteUploadDataResponse);
-              } catch (error) {
-                console.log("error in saving receipt invo", error);
-                onClose();
-              } finally {
-                setIsLoading(false);
-                setTags([]);
-                setAmount("");
-                setImage(null);
-                setFormFile("");
-                setSideNotes("");
-                setReceiptText("");
-              }
-            }}
+            onClick={saveReciptData}
           >
             Save Receipt
           </Button>
