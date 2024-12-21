@@ -17,7 +17,7 @@ interface ReceiptModalProps {
 export default function ReceiptModal({ receipt, onClose }: ReceiptModalProps) {
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="max-w-sm overflow-scroll">
+      <DialogContent className="max-w-md overflow-y-auto max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Receipt Details</DialogTitle>
         </DialogHeader>

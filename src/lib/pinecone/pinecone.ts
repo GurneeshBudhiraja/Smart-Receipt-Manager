@@ -41,7 +41,7 @@ export async function queryVectors(userId: string, queryVector: number[]) {
   try {
     return await index.namespace(userId).query({
       vector: queryVector,
-      topK: 3,
+      topK: 10,
       includeMetadata: true,
     })
   } catch (error) {

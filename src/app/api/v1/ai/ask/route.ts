@@ -30,6 +30,8 @@ export async function POST(request: NextRequest) {
     const userHistory = JSON.parse(userHistoryString);
     const userQuestionEmbedding = await createEmbedding(userQuestion) as number[];
     const { matches } = await queryVectors(userId, userQuestionEmbedding) as PineconeQueryResponse;
+    // TODO: remove in prod
+    console.log(matches)
 
     // Checks for the empty object
     if (!Object.keys(matches).length) {

@@ -1,9 +1,10 @@
 "use client";
 import React from "react";
 import { Button } from "./ui/button";
-import { LogOut, PanelRight } from "lucide-react";
+import { ChevronLeft, LogOut, PanelRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import Link from "next/link";
 
 function DashboardHeader() {
   const router = useRouter();
@@ -24,18 +25,26 @@ function DashboardHeader() {
     }
   }
   return (
-    <header className="flex justify-between items-center bg-white border-b w-full px-12 py-9">
-      <Button size={"icon"} variant={"outline"}>
-        <PanelRight />
-      </Button>
+    <header className="flex justify-between items-center bg-white border-b w-full  px-5 md:px-12 py-9">
+      <Link
+        href="#"
+        onClick={() => {
+          router.back();
+          router.refresh();
+        }}
+        className="text-black hover:text-black/60 transition-all ease-in-out duration-200  text-lg font-semibold flex gap-1 items-center"
+      >
+        <ChevronLeft />
+        <span className="hidden md:block">Back</span>
+      </Link>
       <Button
         variant="outline"
         onClick={logoutUser}
         disabled={loading}
         className="p-5"
       >
-        <LogOut className="h-5 w-5 mr-2" />
-        <span className="text-[15px]">Logout</span>
+        <LogOut className="h-5 w-2 md:mr-2" />
+        <span className="text-[15px] hidden md:block">Logout</span>
       </Button>
     </header>
   );

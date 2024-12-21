@@ -203,7 +203,8 @@ export default function ReceiptFormModal({ onClose }: ReceiptForm) {
                 src={image}
                 alt="Uploaded receipt"
                 layout="fill"
-                objectFit="cover"
+                objectFit="contain"
+                objectPosition="center"
               />
             </div>
           )}
