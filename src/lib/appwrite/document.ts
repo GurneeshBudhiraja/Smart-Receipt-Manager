@@ -1,12 +1,15 @@
-export async function getDoc(db, documentId, collectionId) {
+import { Query } from "node-appwrite"
+
+export async function getDoc(db, documentId, collectionId,) {
   try {
     const doc = await db.getDocument(
       process.env.NEXT_APPWRITE_DB_ID,
       collectionId,
-      documentId
+      documentId,
     )
     return doc
-  } catch {
+  } catch (error) {
+    console.dir(error, { depth: null })
     return null
   }
 }

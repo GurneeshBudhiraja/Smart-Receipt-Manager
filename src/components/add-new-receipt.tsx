@@ -6,7 +6,7 @@ import ReceiptFormModal from "./receipt-form-modal";
 
 function AddReceiptForm() {
   const pathname = usePathname();
-  const [showModal, setShowModal] = useState(false);
+const [showModal, setShowModal] = useState<boolean>(false);
   return (
     <div>
       <div

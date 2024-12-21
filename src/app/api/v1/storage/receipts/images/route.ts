@@ -1,8 +1,10 @@
 import { createSessionClient } from "@/lib/appwrite/appwrite";
 import { getDoc } from "@/lib/appwrite/document";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse, } from "next/server";
 
-export async function GET() {
+
+
+export async function GET(request: NextRequest) {
   try {
     const session = await createSessionClient()
     if (!session) {
@@ -11,9 +13,11 @@ export async function GET() {
         success: false
       }, { status: 401 })
     }
+
     const { account, db, } = session;
     const { $id } = await account.get()
     const getDocResponse = await getDoc(db, $id, process.env.NEXT_APPWRITE_IMAGE_COLLECTION_ID)
+    console.log(getDocResponse)
     if (getDocResponse === null) {
       return NextResponse.json({
         message: "No images found",
