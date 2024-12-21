@@ -25,7 +25,7 @@ export function Sidebar() {
         }}
       >
         <Home className="text-blue-700 " />
-        <span className="text-xl font-semibold hidden md:block">
+        <span className="text-xl font-semibold sr-only md:not-sr-only">
           Smart Expense
         </span>
       </div>
@@ -42,7 +42,7 @@ export function Sidebar() {
                 )}
               >
                 <item.icon className="w-5 h-5 md:mr-3" />
-                <span className="hidden md:block">{item.label}</span>
+                <span className="sr-only md:not-sr-only">{item.label}</span>
               </Link>
             </li>
           ))}
