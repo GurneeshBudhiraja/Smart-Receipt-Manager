@@ -1,8 +1,7 @@
 "use client";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { LogOut } from "lucide-react";
-import { roboto_mono } from "@/app/fonts";
+import { LogOut, LayoutDashboard } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -11,6 +10,8 @@ import {
 } from "@/components/ui/tooltip";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { DashboardIcon } from "@radix-ui/react-icons";
+import { cn } from "@/lib/utils";
 
 export function HomeHeader({
   isLogin,
@@ -36,33 +37,47 @@ export function HomeHeader({
   }
   return (
     <header
-      className={` mt-7 mx-10 mb-2 p-3  ${roboto_mono.className} ${className}`}
+      className={cn("mt-4 md:mt-7 mx-5  md:mx-10 md:mb-2 p-3", className)}
     >
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto md:px-4 w-full">
         <div className="flex items-center justify-end h-16 ">
-          <nav className="flex items-center space-x-8 transition-colors duration-100 ease-in-out ">
-            {/* TODO change to actual link */}
+          <nav className="flex justify-end md:justify-center  items-center space-x-2 md:space-x-8 transition-colors duration-100 ease-in-out flex-wrap">
             {isLogin ? (
               <>
-                {/* Dashboard link */}
-                <TooltipProvider delayDuration={400}>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <Button
-                        variant="outline"
-                        size="lg"
-                        aria-label="User profile"
-                        className=""
-                        asChild
-                      >
-                        <Link href="/dashboard">Dashboard</Link>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" sideOffset={10}>
-                      Dashboard
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                {/* Dashboard link for md screen and above */}
+                <div className="hidden md:block">
+                  <TooltipProvider delayDuration={400}>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        {/* Dashboard text for the md screens and above */}
+                        <Button
+                          variant="outline"
+                          size="lg"
+                          aria-label="User profile"
+                          asChild
+                        >
+                          <Link href="/dashboard">Dashboard</Link>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" sideOffset={10}>
+                        Dashboard
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+                {/* Dashboard link button for sm screens and below */}
+                <Button
+                  variant="outline"
+                  size="icon"
+                  aria-label="User profile"
+                  asChild
+                  className="p-5"
+                >
+                  <Link href="/dashboard" className="block md:hidden">
+                    <LayoutDashboard height={4} width={4} strokeWidth={"2px"}/>
+                  </Link>
+                </Button>
+
                 {/* Logout button */}
                 <TooltipProvider delayDuration={100}>
                   <Tooltip>

@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronRight, Divide, Plus, Receipt } from "lucide-react";
+import { ChevronRight, Receipt } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from "react";
@@ -112,7 +112,7 @@ export default function Overview() {
 function LoadingIndicator() {
   return (
     <div className="flex justify-center items-center h-64">
-      <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+      <div className=" h-16 w-16 rounded-full drop-shadow-lg animate-spin   border-t-2 border-b-2 border-blue-500"></div>
     </div>
   );
 }
