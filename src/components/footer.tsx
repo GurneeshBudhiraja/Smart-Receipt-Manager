@@ -3,7 +3,7 @@ import Link from "next/link";
 
 function Footer() {
   return (
-    <footer className="bg-black text-white py-12">
+    <footer className="bg-blue-600 text-white py-12 opacity-95">
       <div className="container mx-auto px-4 md:px-6 lg:px-8 xl:px-12 text-center">
         <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-medium mb-4">
           Simplify Your Expense Management with Smart Expense

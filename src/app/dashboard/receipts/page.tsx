@@ -80,8 +80,8 @@ export default function ReceiptsPage() {
     <div className={`container mx-auto px-4 py-8 `}>
       {/* loader */}
       {isLoading && (
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2  text-xl font-medium z-50 opacity-100 transition-all ease-in-out duration-200">
-          Loading...
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
+          <Loader />
         </div>
       )}
       <div
@@ -111,6 +111,14 @@ export default function ReceiptsPage() {
           />
         )}
       </div>
+    </div>
+  );
+}
+
+function Loader() {
+  return (
+    <div className="flex justify-center items-center h-64">
+      <div className=" h-16 w-16 rounded-full drop-shadow-lg animate-spin   border-t-2 border-b-2 border-blue-500"></div>
     </div>
   );
 }
