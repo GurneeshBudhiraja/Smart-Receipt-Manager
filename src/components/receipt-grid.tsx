@@ -13,9 +13,9 @@ export default function ReceiptGrid({
 }: ReceiptGridProps) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {receipts.map((receipt, index) => (
+      {receipts.map((receipt) => (
         <div
-          key={index}
+          key={receipt.id}
           className="relative aspect-[3/4] overflow-hidden rounded-lg drop-shadow-md cursor-pointer transition-transform duration-200 ease-in-out hover:scale-[1.02] group border border-gray-300"
           onClick={() => onReceiptClick(receipt)}
         >
@@ -24,6 +24,7 @@ export default function ReceiptGrid({
             className={`${receipt.imageUrl ? "" : "filter opacity-40"}`}
             src={receipt.imageUrl || "/placeholder.jpeg"}
             alt={`Receipt image`}
+            objectPosition="center"
             layout="fill"
             objectFit="cover"
           />

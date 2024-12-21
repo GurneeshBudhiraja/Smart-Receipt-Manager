@@ -10,3 +10,4 @@ export async function convertToBase64(image: File) {
     reader.onerror = () => reject(null)
   })
 }
+

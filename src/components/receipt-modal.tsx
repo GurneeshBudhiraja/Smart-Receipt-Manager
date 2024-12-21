@@ -28,7 +28,8 @@ export default function ReceiptModal({ receipt, onClose }: ReceiptModalProps) {
               src={receipt.imageUrl || "/placeholder.jpeg"}
               alt={`Receipt image`}
               layout="fill"
-              objectFit="cover"
+              objectFit="contain"
+              objectPosition="center"
               className={`${receipt.imageUrl ? "" : "filter opacity-40"}`}
             />
           </div>

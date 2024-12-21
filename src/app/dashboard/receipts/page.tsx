@@ -21,7 +21,6 @@ export default function ReceiptsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   useEffect(() => {
     getUserReceipts();
-    console.log("this is running");
     return () => {
       setReceipts([]);
       setIsLoading(true);
@@ -35,17 +34,35 @@ export default function ReceiptsPage() {
       const response = await axios.get("/api/v1/storage/receipts/images");
       const image_ids = response?.data?.image_ids;
 
-      const imageRequests = image_ids.map((image: string) =>
+      const imageDataRequests = image_ids.map((image: string) =>
         axios.get(`/api/v1/storage/receipts/data/${image}`)
       );
 
       const responses: Array<Record<string, string | Record<string, string>>> =
-        await Promise.all(imageRequests);
+        await Promise.all(imageDataRequests);
 
       const filteredResponses = responses.map(
         (response) => response.data?.data
       );
+
       setReceipts([...receipts, ...filteredResponses]);
+
+      const base64ImagesPromises = image_ids.map((image: string) => {
+        return axios.get(`/api/v1/storage/image/${image}`);
+      });
+
+      const base64Images = await Promise.all(base64ImagesPromises);
+      const base64ImageURLs = base64Images.map((image) => {
+        return image.data;
+      });
+      console.log(base64ImageURLs);
+      setReceipts((prevReceipts) => {
+        const updatedReceipt = prevReceipts.map((receiptData, index) => {
+          receiptData.imageUrl = `data:${base64ImageURLs[index].contentType};base64,${base64ImageURLs[index].data}`;
+          return receiptData;
+        });
+        return updatedReceipt;
+      });
     } catch (error) {
       console.log("error in getting all the receipts", error);
     } finally {
