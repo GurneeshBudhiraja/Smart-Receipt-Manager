@@ -1,6 +1,5 @@
 import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 
-// TODO: fix the type issue
 export async function getImageSummary(base64Image: string, mimeType: string) {
   try {
     const genAI = new GoogleGenerativeAI(process.env.NEXT_GEMINI_API_KEY);

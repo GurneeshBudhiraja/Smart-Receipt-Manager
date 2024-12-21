@@ -4,11 +4,12 @@ import { ID } from "node-appwrite";
 import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import axios from "axios";
 
 interface Message {
   id: string;
   text: string;
-  sender: "user" | "bot";
+  sender: "user" | "model";
 }
 
 export default function ChatInterface() {
@@ -24,14 +25,37 @@ export default function ChatInterface() {
     inputRef.current?.focus();
   }, [messages]);
 
-  const mockMessageToAI = async (): Promise<Record<string, string>> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          message: "Hello, I am Smart Expense AI!",
-        });
-      }, 5000);
-    });
+  const messageAI = async (
+    inputMessage: string
+  ): Promise<{
+    isValidQuestion: boolean;
+    message: {
+      message: string;
+    };
+  }> => {
+    let userHistory = [];
+    if (setMessages.length) {
+      userHistory = messages.map((message) => {
+        const { id, ...rest } = message;
+        return {
+          role: rest.sender,
+          parts: [{ text: rest.text }],
+        };
+      });
+    }
+    const messageAIResponse = await axios.post(
+      "/api/v1/ai/ask",
+      {
+        userquestion: inputMessage,
+        userhistory: JSON.stringify(userHistory),
+      },
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+    return messageAIResponse.data;
   };
 
   const handleSendMessage = async (e: React.FormEvent) => {
@@ -45,16 +69,16 @@ export default function ChatInterface() {
           sender: "user",
         };
         setMessages([...messages, newMessage]);
+        // Message to ai here
+        const respone = await messageAI(inputMessage);
         setInputMessage("");
-        // Mock message to ai here
-        const respone = await mockMessageToAI();
         setMessages((prev) => {
           return [
             ...prev,
             {
               id: ID.unique(),
-              text: respone.message,
-              sender: "bot",
+              text: respone.message?.message,
+              sender: "model",
             },
           ];
         });
@@ -66,7 +90,7 @@ export default function ChatInterface() {
         {
           id: ID.unique(),
           text: "Sorry, I am unable to respond right now",
-          sender: "bot",
+          sender: "model",
         },
       ]);
     } finally {
