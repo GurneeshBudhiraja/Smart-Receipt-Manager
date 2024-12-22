@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useRef } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, MotionValue, useScroll, useTransform } from "framer-motion";
+import { ScrollIndicator } from "@/components/ui/scroll-indicator";
+import Link from "next/link";
 
 const steps = [
   {
@@ -33,80 +35,113 @@ const steps = [
 ];
 
 export default function HowItWorks() {
-  const [activeStep, setActiveStep] = useState(0);
-  const sectionRef = useRef<HTMLElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (sectionRef.current) {
-        const { top, height } = sectionRef.current.getBoundingClientRect();
-        const totalScrollRange = height - window.innerHeight;
-        const scrollProgress = Math.max(
-          0,
-          Math.min(1, -top / totalScrollRange)
-        );
-        const stepIndex = Math.min(
-          steps.length - 1,
-          Math.floor(scrollProgress * steps.length)
-        );
-        setActiveStep(stepIndex);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"],
+  });
 
   return (
-    <section ref={sectionRef} className="relative min-h-[500vh]">
-      <h2 className="text-3xl md:text-4xl font-bold text-center  ">
-        How It Works
-      </h2>
-      <div className="sticky top-0 h-screen flex items-center justify-center px-24">
-        <div className="w-screen flex items-center justify-center">
+    <section className="relative bg-gray-50" ref={containerRef}>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">
+          How It Works
+        </h2>
+        <div className="space-y-32 md:space-y-64 mb-96">
           {steps.map((step, index) => (
-            <motion.div
+            <StepContent
               key={index}
-              initial={{ opacity: 0, x: -50 }}
-              animate={{
-                opacity: index === activeStep ? 1 : 0,
-                x: index === activeStep ? 0 : -50,
-              }}
-              transition={{ duration: 0.5 }}
-              className={`absolute`}
-            >
-              <Image
-                src={step.image}
-                alt={step.title}
-                width={500}
-                height={300}
-                className="rounded-lg shadow-lg"
-              />
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Right Section: Text */}
-        <div className="w-full ">
-          {steps.map((step, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, x: 50 }}
-              animate={{
-                opacity: index === activeStep ? 1 : 0,
-                x: index === activeStep ? 0 : 50,
-              }}
-              transition={{ duration: 0.5 }}
-              className={`absolute ml-5`}
-            >
-              <h3 className="text-3xl font-semibold text-gray-800">
-                {step.title}
-              </h3>
-              <p className="text-lg text-gray-600">{step.description}</p>
-            </motion.div>
+              step={step}
+              index={index}
+              progress={scrollYProgress}
+              isLast={index === steps.length - 1}
+            />
           ))}
         </div>
       </div>
+      <Footer progress={scrollYProgress} />
+      <ScrollIndicator progress={scrollYProgress} />
     </section>
+  );
+}
+
+interface StepContentProps {
+  step: {
+    title: string;
+    description: string;
+    image: string;
+  };
+  index: number;
+  progress: MotionValue<number>;
+  isLast: boolean;
+}
+
+function StepContent({ step, index, progress, isLast }: StepContentProps) {
+  const yOffset = useTransform(
+    progress,
+    [index / steps.length, (index + 1) / steps.length],
+    [100, 0]
+  );
+  const opacity = useTransform(
+    progress,
+    [
+      index / steps.length,
+      (index + 0.3) / steps.length,
+      (index + 0.8) / steps.length,
+      (index + 1) / steps.length,
+    ],
+    [0, 1, 1, isLast ? 1 : 0]
+  );
+
+  return (
+    <motion.div
+      style={{ opacity, y: yOffset }}
+      className={`flex flex-col md:flex-row items-center justify-between gap-8 ${
+        index === 0 ? "mt-4" : ""
+      }`}
+    >
+      <div className="w-full md:w-1/2 relative aspect-video">
+        <Image
+          src={step.image}
+          alt={step.title}
+          layout="fill"
+          objectFit="cover"
+          className="rounded-lg shadow-lg"
+        />
+      </div>
+      <div className="w-full md:w-1/2 space-y-4">
+        <h3 className="text-2xl md:text-3xl font-semibold">{step.title}</h3>
+        <p className="text-lg text-gray-600">{step.description}</p>
+      </div>
+    </motion.div>
+  );
+}
+
+// Home page footer
+function Footer({ progress }: { progress: MotionValue<number> }) {
+  const footerY = useTransform(progress, [0.85, 1], ["100%", "0%"]);
+  const footerScale = useTransform(progress, [0.85, 1], [0.9, 1]);
+  const footerOpacity = useTransform(progress, [0.85, 1], [0, 1]);
+
+  return (
+    <motion.footer
+      className="fixed bottom-0 left-0 right-0 bg-white shadow-lg rounded-t-3xl"
+      style={{ y: footerY, scale: footerScale, opacity: footerOpacity }}
+    >
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h3 className="text-2xl font-bold text-center mb-4">Ready to Start?</h3>
+        <p className="text-center text-gray-600 mb-6">
+          Begin your journey to smarter expense management today.
+        </p>
+        <div className="flex justify-center">
+          <Link href={"/login"}>
+            <button className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors">
+              Get Started
+            </button>
+          </Link>
+        </div>
+      </div>
+    </motion.footer>
   );
 }

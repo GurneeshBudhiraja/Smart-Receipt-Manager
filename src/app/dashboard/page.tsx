@@ -12,10 +12,10 @@ export default function Overview() {
     { id: string; imageUrl: string }[]
   >([]);
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     if (recentReceipts.length === 0) {
-      getRecentReceipts();
+      // getRecentReceipts();
     }
   }, []);
   async function getRecentReceipts() {

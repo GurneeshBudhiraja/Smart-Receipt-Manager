@@ -39,9 +39,9 @@ export function HomeHeader({
     <header
       className={cn("mt-4 md:mt-7 mx-5  md:mx-10 md:mb-2 p-3", className)}
     >
-      <div className="container mx-auto md:px-4 w-full">
+      <div className="container mx-auto w-full md:mr-6 ">
         <div className="flex items-center justify-end h-16 ">
-          <nav className="flex justify-end md:justify-center  items-center space-x-2 md:space-x-8 transition-colors duration-100 ease-in-out flex-wrap">
+          <nav className="flex justify-end md:justify-center  items-center space-x-2 md:space-x-8  transition-colors duration-100 ease-in-out flex-wrap">
             {isLogin ? (
               <>
                 {/* Dashboard link for md screen and above */}
@@ -74,7 +74,7 @@ export function HomeHeader({
                   className="p-5"
                 >
                   <Link href="/dashboard" className="block md:hidden">
-                    <LayoutDashboard height={4} width={4} strokeWidth={"2px"}/>
+                    <LayoutDashboard height={4} width={4} strokeWidth={"2px"} />
                   </Link>
                 </Button>
 
@@ -107,7 +107,6 @@ export function HomeHeader({
                 variant="outline"
                 size="lg"
                 aria-label="User profile"
-                className=""
                 asChild
               >
                 <Link href="/login">Get Started</Link>
