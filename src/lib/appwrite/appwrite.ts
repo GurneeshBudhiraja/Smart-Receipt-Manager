@@ -18,7 +18,7 @@ export async function createSessionClient(): Promise<SessionClient> {
     get account() {
       return new Account(client);
     },
-    get storage() {
+    get storage(): Storage {
       return new Storage(client);
     },
     get db() {

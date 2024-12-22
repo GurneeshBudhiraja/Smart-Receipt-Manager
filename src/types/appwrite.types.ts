@@ -1,4 +1,4 @@
-import { Account, Databases } from "node-appwrite";
+import { Account, Databases, Storage } from "node-appwrite";
 
 // Type for the session client
 export type SessionClient = {
