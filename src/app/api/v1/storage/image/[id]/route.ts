@@ -18,11 +18,13 @@ export async function GET() {
     const imageId = pathName?.split("/").filter(Boolean).pop();
 
     // Gets the mimetype of the image
-    const { mimeType } = await storage.getFile(process.env.NEXT_APPWRITE_BUCKET_ID, imageId)
+    const { mimeType } = await storage.getFile(process.env.NEXT_APPWRITE_BUCKET_ID, imageId as string)
 
-    const fileResponse = await storage.getFileView(process.env.NEXT_APPWRITE_BUCKET_ID, imageId)
+    const fileViewResponse = await storage.getFileView(process.env.NEXT_APPWRITE_BUCKET_ID, imageId as string)
+    if (fileViewResponse === null) {
 
-    const url = Buffer.from(fileResponse).toString("base64")
+    }
+    const url = Buffer.from(fileViewResponse).toString("base64")
 
     return NextResponse.json({
       success: true,
