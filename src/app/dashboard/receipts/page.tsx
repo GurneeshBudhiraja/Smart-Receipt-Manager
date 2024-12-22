@@ -18,7 +18,8 @@ export default function ReceiptsPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [receipts, setReceipts] = useState<Receipt[]>([]);
   const [selectedReceipt, setSelectedReceipt] = useState<Receipt | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
   useEffect(() => {
     getUserReceipts();
     return () => {
@@ -33,30 +34,31 @@ export default function ReceiptsPage() {
   const getUserReceipts = async () => {
     try {
       const response = await axios.get("/api/v1/storage/receipts/images");
-      const image_ids = response?.data?.image_ids;
+      const image_ids: string[] = response?.data?.image_ids;
 
       const imageDataRequests = image_ids.map((image: string) =>
         axios.get(`/api/v1/storage/receipts/data/${image}`)
       );
+      type ResponseType = { data: { data: Receipt } }; // Define the response type to match the structure you're receiving
 
-      const responses: Array<Record<string, string | Record<string, string>>> =
-        await Promise.all(imageDataRequests);
+      const responses: Array<ResponseType> = await Promise.all(
+        imageDataRequests
+      );
 
-      const filteredResponses = responses.map(
+      // Map over the responses and extract the data
+      const filteredResponses: Receipt[] = responses.map(
         (response) => response.data?.data
       );
 
-      setReceipts([...receipts, ...filteredResponses]);
+      setReceipts((prevReceipts) => [...prevReceipts, ...filteredResponses]);
 
-      const base64ImagesPromises = image_ids.map((image: string) => {
-        return axios.get(`/api/v1/storage/image/${image}`);
-      });
+      const base64ImagesPromises = image_ids.map((image: string) =>
+        axios.get(`/api/v1/storage/image/${image}`)
+      );
 
       const base64Images = await Promise.all(base64ImagesPromises);
-      const base64ImageURLs = base64Images.map((image) => {
-        return image.data;
-      });
-      console.log(base64ImageURLs);
+      const base64ImageURLs = base64Images.map((image) => image.data);
+
       setReceipts((prevReceipts) => {
         const updatedReceipt = prevReceipts.map((receiptData, index) => {
           receiptData.imageUrl = `data:${base64ImageURLs[index].contentType};base64,${base64ImageURLs[index].data}`;
@@ -119,7 +121,7 @@ export default function ReceiptsPage() {
 function Loader() {
   return (
     <div className="flex justify-center items-center h-64">
-      <div className=" h-16 w-16 rounded-full drop-shadow-lg animate-spin   border-t-2 border-b-2 border-blue-500"></div>
+      <div className=" h-16 w-16 rounded-full drop-shadow-lg animate-spin border-t-2 border-b-2 border-blue-500"></div>
     </div>
   );
 }
