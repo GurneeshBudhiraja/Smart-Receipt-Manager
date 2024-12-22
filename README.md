@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Smart Expense
 
-## Getting Started
+**Smart Expense** is a smarter way to manage your expenses using **RAG-based (Retrieval-Augmented Generation)** technology. It combines intuitive features, AI-powered insights, and an easy-to-use interface to help users efficiently organize and understand their financial data.
 
-First, run the development server:
+## Why Use Smart Expense?
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### 🧾 Keep Track of Your Receipts  
+- Snap or upload your receipts and find them whenever you need them.
+- No more lost papers or forgotten expenses!
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 🤖 Get AI-Powered Insights  
+- Do you have questions about your spending? Ask the built-in chatbot.  
+- It’ll fetch info from your receipts and help with personal finance too!  
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### ✨ Simple and Easy to Use  
+- Clean, intuitive design makes managing expenses feel effortless.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Technologies Used
 
-## Learn More
+### Frontend & Backend
+- **Next.js 15**: For building both the frontend and backend of the app.  
 
-To learn more about Next.js, take a look at the following resources:
+### Infrastructure
+- **Appwrite**: Handles storage, database, and authentication.  
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Hosting
+- **Vercel**: Makes the app lightning-fast and always online.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## How It Works?
+1. Upload your receipts.
+2. Let the AI organize and analyze them.
+3. Search, ask questions, or browse receipts whenever you need to.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+###### Made With ❤️ By [Gurneesh](https://github.com/GurneeshBudhiraja/)
