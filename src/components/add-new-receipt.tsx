@@ -10,7 +10,7 @@ const [showModal, setShowModal] = useState<boolean>(false);
   return (
     <div>
       <div
-        className={`absolute right-10 bottom-9 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 p-3 rounded-full cursor-pointer ${
+        className={`absolute right-7 bottom-3 lg:right-10 lg:bottom-9 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 p-3 rounded-full cursor-pointer ${
           pathname === "/dashboard/chat" ? "hidden" : ""
         }`}
         onClick={() => setShowModal((prev) => !prev)}
