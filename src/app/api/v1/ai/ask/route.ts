@@ -2,7 +2,7 @@ import { createSessionClient } from "@/lib/appwrite/appwrite";
 import { createEmbedding } from "@/lib/gemini/embeddings";
 import { generateResponse } from "@/lib/gemini/geminiResponse";
 import { queryVectors } from "@/lib/pinecone/pinecone";
-import { PineconeQueryResponse, PineconeQueryResult } from "@/types/pinecone.types";
+import { PineconeQueryResponse } from "@/types/pinecone.types";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -21,17 +21,20 @@ export async function POST(request: NextRequest) {
     const userQuestion = formFields.get("userquestion") as string;
     const userHistoryString = formFields.get("userhistory") as string;
 
-    if (!userQuestion?.trim() && !userHistoryString?.trim()) {
+    if (!userQuestion?.trim()) {
       return NextResponse.json({
         message: "Missing data has been provided",
         success: false,
       }, { status: 400 })
     }
-    const userHistory = JSON.parse(userHistoryString);
+
+    let userHistory = []
+    if (userHistoryString.trim()) {
+      userHistory = JSON.parse(userHistoryString);
+    }
     const userQuestionEmbedding = await createEmbedding(userQuestion) as number[];
     const { matches } = await queryVectors(userId, userQuestionEmbedding) as PineconeQueryResponse;
-    // TODO: remove in prod
-    console.log(matches)
+
 
     // Checks for the empty object
     if (!Object.keys(matches).length) {

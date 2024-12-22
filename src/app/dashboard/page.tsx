@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import ExpenseSnapshot from "@/components/expense-snapshot";
 
 export default function Overview() {
   const [recentReceipts, setRecentReceipt] = useState<
@@ -13,11 +14,14 @@ export default function Overview() {
   >([]);
 
   const [loading, setLoading] = useState(true);
+  const [snapshotLoading, setSnapshotLoading] = useState<boolean>(false);
+
   useEffect(() => {
     if (recentReceipts.length === 0) {
-      // getRecentReceipts();
+      getRecentReceipts();
     }
   }, []);
+  // gets the 4 recent receipts from the db
   async function getRecentReceipts() {
     try {
       setLoading(true);
@@ -49,16 +53,22 @@ export default function Overview() {
       setLoading(false);
     }
   }
+
   return (
-    <div className="flex flex-col h-full space-y-6 ">
-      <section className="flex-none h-1/3">
-        <h1 className="text-3xl font-bold mb-4">Overview</h1>
-        {/* Content for the top section can be added here */}
+    <div className="flex flex-col h-full space-y-6 p-4 sm:p-6 md:p-8">
+      <section className="flex-none">
+        <h2 className="text-xl sm:text-2xl font-semibold mb-4 flex items-center justify-center w-fit gap-2 p-1">
+          Spending Snapshot
+        </h2>
+        <ExpenseSnapshot
+          snapshotLoading={snapshotLoading}
+          setSnapshotLoading={setSnapshotLoading}
+        />
       </section>
 
       <section className="flex-grow">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-semibold">Recent Receipts</h2>
+          <h2 className="text-xl sm:text-2xl font-semibold">Recent Receipts</h2>
           <Button variant="ghost" asChild disabled={loading}>
             <Link
               href="/dashboard/receipts"
@@ -73,10 +83,13 @@ export default function Overview() {
         {loading ? (
           <LoadingIndicator />
         ) : recentReceipts.length ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-4 md:mb-0">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-4 mb-4 md:mb-0">
             {recentReceipts.map((receipt) => (
-              <Card key={receipt.id} className="overflow-hidden p-4 shadow-lg">
-                <CardContent className=" relative aspect-[3/4] ">
+              <Card
+                key={receipt.id}
+                className="overflow-hidden p-2 sm:p-4 shadow-lg"
+              >
+                <CardContent className="relative aspect-[3/4]">
                   <Image
                     loading="lazy"
                     src={receipt.imageUrl}
@@ -92,12 +105,12 @@ export default function Overview() {
           </div>
         ) : (
           <Card className="bg-gray-50 border-dashed border-gray-300 rounded-lg mx-auto mb-4 md:mb-0">
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <Receipt className="h-12 w-12 text-gray-400 mb-4" />
-              <h3 className="text-xl font-semibold text-gray-700 mb-2">
+            <CardContent className="flex flex-col items-center justify-center py-8 sm:py-12">
+              <Receipt className="h-8 w-8 sm:h-12 sm:w-12 text-gray-400 mb-4" />
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2">
                 No Recent Receipts
               </h3>
-              <p className="text-gray-500 text-center max-w-xs mx-auto">
+              <p className="text-sm sm:text-base text-gray-500 text-center max-w-xs mx-auto">
                 You haven&apos;t added any receipts yet. Start by adding your
                 first receipt to track your expenses.
               </p>

@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/tooltip";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { DashboardIcon } from "@radix-ui/react-icons";
 import { cn } from "@/lib/utils";
 
 export function HomeHeader({

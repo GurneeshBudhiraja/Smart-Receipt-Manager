@@ -32,6 +32,20 @@ export default function ReceiptFormModal({ onClose }: ReceiptForm) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [formFile, setFormFile] = useState<File | "">("");
+  const [isSuccess, setIsSuccess] = useState<boolean>(false);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [open, setOpen] = useState<boolean>(true);
+  const validateForm = (): boolean => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (!image) newErrors.image = "Please upload a receipt image";
+    if (!amount.trim()) newErrors.amount = "Please enter the amount";
+    if (tags.length === 0) newErrors.tags = "Please add at least one tag";
+
+    setErrors(newErrors);
+    setTimeout(() => setOpen(false),2000);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
@@ -111,27 +125,28 @@ export default function ReceiptFormModal({ onClose }: ReceiptForm) {
 
   const saveReciptData = async () => {
     try {
-      setIsLoading(true);
-      const appwriteUploadDataResponse = await axios.post(
-        "/api/v1/storage/receipts/upload",
-        {
-          image: formFile,
-          category: tags[0],
-          sidenotes: sideNotes.trim(),
-          amount,
-          receipttext: receiptText,
-          date: receiptDate,
-        },
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
+      if (validateForm()) {
+        setIsLoading(true);
+        await axios.post(
+          "/api/v1/storage/receipts/upload",
+          {
+            image: formFile,
+            category: tags[0],
+            sidenotes: sideNotes.trim(),
+            amount,
+            receipttext: receiptText,
+            date: receiptDate,
           },
-        }
-      );
-      console.log("Successfully uploaded");
-      console.log(appwriteUploadDataResponse);
-      router.push("/dashboard/receipts");
-      router.refresh();
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        setIsSuccess(true);
+        router.push("/dashboard/");
+        router.refresh();
+      }
     } catch (error) {
       console.log("error in saving receipt invo", error);
       onClose();
@@ -143,11 +158,14 @@ export default function ReceiptFormModal({ onClose }: ReceiptForm) {
       setFormFile("");
       setSideNotes("");
       setReceiptText("");
+      setTimeout(() => {
+        setOpen(false);
+      }, 2000);
     }
   };
 
   return (
-    <Dialog open={true} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={onClose}>
       <DialogContent
         className="max-w-md overflow-y-auto max-h-[90vh]"
         aria-describedby="Modal for adding a new receipt"
@@ -164,6 +182,7 @@ export default function ReceiptFormModal({ onClose }: ReceiptForm) {
               className="block text-sm font-medium text-gray-700 mb-1"
             >
               Upload Receipt Image
+              <span className="text-red-500 ml-1">*</span>
             </Label>
             <div className="flex space-x-2">
               <Button
@@ -196,6 +215,9 @@ export default function ReceiptFormModal({ onClose }: ReceiptForm) {
               ref={fileInputRef}
               disabled={isLoading}
             />
+            {errors.image && (
+              <p className="text-red-500 text-sm mt-1">{errors.image}</p>
+            )}
           </div>
           {image && (
             <div className="relative aspect-[3/4] overflow-hidden rounded-lg mb-4">
@@ -214,6 +236,7 @@ export default function ReceiptFormModal({ onClose }: ReceiptForm) {
               className="block text-sm font-medium text-gray-700 mb-1"
             >
               Amount
+              <span className="text-red-500 ml-1">*</span>
             </Label>
             <Input
               id="amount"
@@ -223,6 +246,9 @@ export default function ReceiptFormModal({ onClose }: ReceiptForm) {
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
             />
+            {errors.amount && (
+              <p className="text-red-500 text-sm mt-1">{errors.amount}</p>
+            )}
           </div>
           <div>
             <Label
@@ -230,6 +256,7 @@ export default function ReceiptFormModal({ onClose }: ReceiptForm) {
               className="block text-sm font-medium text-gray-700 mb-1"
             >
               Tags
+              <span className="text-red-500 ml-1">*</span>
             </Label>
             <Input
               id="tags"
@@ -253,11 +280,14 @@ export default function ReceiptFormModal({ onClose }: ReceiptForm) {
                     onClick={() => handleRemoveTag(tag)}
                     className="ml-1 text-gray-500 hover:text-gray-700"
                   >
-                    <X />
+                    <X className="h-3 w-3" />
                   </button>
                 </Badge>
               ))}
             </div>
+            {errors.tags && (
+              <p className="text-red-500 text-sm mt-1">{errors.tags}</p>
+            )}
           </div>
           <div>
             <Label
@@ -274,14 +304,30 @@ export default function ReceiptFormModal({ onClose }: ReceiptForm) {
               className="border-gray-300 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
-          <Button
-            type="submit"
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white"
-            disabled={isLoading}
-            onClick={saveReciptData}
-          >
-            Save Receipt
-          </Button>
+          {isSuccess ? (
+            <div
+              className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative"
+              role="alert"
+            >
+              <strong className="font-bold">Success!</strong>
+              <span className="block sm:inline">
+                {" "}
+                Receipt saved successfully.
+              </span>
+            </div>
+          ) : (
+            <Button
+              type="submit"
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+              disabled={isLoading}
+              onClick={saveReciptData}
+            >
+              {isLoading ? "Saving..." : "Save Receipt"}
+            </Button>
+          )}
+          {errors.submit && (
+            <p className="text-red-500 text-sm mt-1">{errors.submit}</p>
+          )}
         </div>
       </DialogContent>
     </Dialog>
