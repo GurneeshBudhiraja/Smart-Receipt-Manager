@@ -28,7 +28,6 @@ export default function ReceiptsPage() {
       setSelectedReceipt(null);
       setSearchTerm("");
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getUserReceipts = async () => {
