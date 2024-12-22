@@ -2,7 +2,7 @@ import { ID } from "node-appwrite";
 import { InputFile } from "node-appwrite/file";
 
 
-// @ts-ignore
+
 export async function uploadImage(storage, imagePath: File) {
   try {
     const id = ID.unique()
