@@ -6,11 +6,7 @@ export async function createEmbedding(text: string) {
   try {
     const geminiEmbeddingRespose = await model.embedContent(text)
     return geminiEmbeddingRespose.embedding.values
-  } catch (error) {
-    // TODO: remove in prod
-    if (error instanceof Error) {
-      console.error("Error in createEmbedding", error.message)
-    }
+  } catch {
     return null
   }
 }

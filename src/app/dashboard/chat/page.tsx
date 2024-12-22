@@ -6,10 +6,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
 
+// Sender type
+type Sender = "user" | "model";
+
+// Type for the each message
 interface Message {
   id: string;
   text: string;
-  sender: "user" | "model";
+  sender: Sender;
+}
+
+// Type for the user's message history
+interface UserHistory {
+  role: Sender;
+  parts: [{ text: string }];
 }
 
 export default function ChatInterface() {
@@ -33,9 +43,10 @@ export default function ChatInterface() {
       message: string;
     };
   }> => {
-    let userHistory = [];
+    let userHistory: UserHistory[] = [];
     if (setMessages.length) {
       userHistory = messages.map((message) => {
+        /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
         const { id, ...rest } = message;
         return {
           role: rest.sender,

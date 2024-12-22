@@ -3,10 +3,15 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
+interface ExpenseSnapshotProps {
+  snapshotLoading: boolean;
+  setSnapshotLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 export default function ExpenseSnapshot({
   snapshotLoading,
   setSnapshotLoading,
-}) {
+}: ExpenseSnapshotProps) {
   const [snapshot, setSnapshot] = useState<string>("");
   // Gets the snapshot of the summary
   async function getExpenseSnapshot() {
@@ -41,6 +46,8 @@ export default function ExpenseSnapshot({
   useEffect(() => {
     setSnapshotLoading(true);
     getExpenseSnapshot();
+    // for empty array value
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

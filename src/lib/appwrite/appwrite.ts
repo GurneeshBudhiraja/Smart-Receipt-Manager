@@ -1,6 +1,6 @@
 import { SessionClient } from "@/types/appwrite.types";
 import { cookies } from "next/headers";
-import { Client, Account, Storage, Databases } from "node-appwrite";
+import { Client, Account, Storage, Databases, } from "node-appwrite";
 
 export async function createSessionClient(): Promise<SessionClient> {
   const client = new Client()

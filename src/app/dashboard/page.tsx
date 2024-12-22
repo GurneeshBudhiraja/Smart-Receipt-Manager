@@ -20,6 +20,7 @@ export default function Overview() {
     if (recentReceipts.length === 0) {
       getRecentReceipts();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   // gets the 4 recent receipts from the db
   async function getRecentReceipts() {

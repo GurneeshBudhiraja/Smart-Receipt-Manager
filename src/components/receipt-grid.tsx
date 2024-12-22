@@ -13,6 +13,7 @@ export default function ReceiptGrid({
 }: ReceiptGridProps) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      {/* Shows all the receipts to the user */}
       {receipts.map((receipt) => (
         <div
           key={receipt.id}

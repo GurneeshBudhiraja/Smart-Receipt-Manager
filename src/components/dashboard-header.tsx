@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { Button } from "./ui/button";
-import { ChevronLeft, LogOut, PanelRight } from "lucide-react";
+import { ChevronLeft, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";

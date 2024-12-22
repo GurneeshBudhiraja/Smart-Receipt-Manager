@@ -35,6 +35,8 @@ export default function ReceiptFormModal({ onClose }: ReceiptForm) {
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [open, setOpen] = useState<boolean>(true);
+
+  // validates the form fields
   const validateForm = (): boolean => {
     const newErrors: { [key: string]: string } = {};
 
@@ -47,15 +49,19 @@ export default function ReceiptFormModal({ onClose }: ReceiptForm) {
     return Object.keys(newErrors).length === 0;
   };
 
+  // input file change handler, converts the image to base64 encoded string and updates the state
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
       setIsLoading(true);
       const file = e.target.files?.[0] as File;
+
       const base64Image = (await convertToBase64(file)) as string;
-      // To show in the browser
+      // State to show image on browser
       setImage(base64Image);
       // state for sending file in the backend
       setFormFile(file);
+
+      // replaces the start of the base64 image to only include the relevant base64 data
       const base64EncodedImage = base64Image.replace(
         /^data:image\/\w+;base64,/,
         ""
@@ -102,6 +108,7 @@ export default function ReceiptFormModal({ onClose }: ReceiptForm) {
     }
   };
 
+  // listens for enter key press on the set tags field
   const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && currentTag.trim() !== "") {
       setTags([...tags, currentTag.trim()]);
@@ -109,10 +116,12 @@ export default function ReceiptFormModal({ onClose }: ReceiptForm) {
     }
   };
 
+  // removes the tag from the state
   const handleRemoveTag = (tagToRemove: string) => {
     setTags(tags.filter((tag) => tag !== tagToRemove));
   };
 
+  // handles the event for file input via camera or gallery
   const triggerImageUpload = (captureMethod: "camera" | "gallery") => {
     if (fileInputRef.current) {
       fileInputRef.current.setAttribute(
@@ -147,10 +156,11 @@ export default function ReceiptFormModal({ onClose }: ReceiptForm) {
         router.push("/dashboard/");
         router.refresh();
       }
-    } catch (error) {
-      console.log("error in saving receipt invo", error);
+    } catch {
+      // closes the modal on error
       onClose();
     } finally {
+      // resets all the states
       setIsLoading(false);
       setTags([]);
       setAmount("");

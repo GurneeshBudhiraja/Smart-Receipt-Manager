@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 
 // TODO: fix the type 
-export async function generateResponse(userQuestion: string, userHistory, userData): Promise<string> {
+export async function generateResponse(userQuestion: string, userHistory, userData): Promise<string | null> {
   try {
     const genAI = new GoogleGenerativeAI(process.env.NEXT_GEMINI_API_KEY);
 

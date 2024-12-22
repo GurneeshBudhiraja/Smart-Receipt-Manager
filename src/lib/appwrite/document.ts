@@ -1,5 +1,3 @@
-import { Query } from "node-appwrite"
-
 export async function getDoc(db, documentId, collectionId,) {
   try {
     const doc = await db.getDocument(
@@ -35,7 +33,7 @@ export async function createDoc(db, storage, documentId, uploadedImageId, collec
 }
 
 
-// TODO: fix the any types
+
 export async function updateDoc(db, storage, category, uploadedImageId, image_ids, documentId) {
   try {
     await db.updateDocument(

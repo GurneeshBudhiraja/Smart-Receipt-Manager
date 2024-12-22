@@ -46,9 +46,14 @@ export async function POST(request: NextRequest) {
     }
     const vectorStoreData = matches.map(match => match.metadata.receiptText)
     const geminiResponseJSON = await generateResponse(userQuestion, userHistory, vectorStoreData)
-
+    if (geminiResponseJSON === null) {
+      return NextResponse.json({
+        message: "Something went wrong while generating a response from AI",
+        success: false,
+      }, { status: 500 })
+    }
     const geminiResponse = JSON.parse(geminiResponseJSON)
-    console.log(geminiResponse)
+
     return NextResponse.json({
       message: geminiResponse,
       success: true,

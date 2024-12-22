@@ -1,10 +1,8 @@
-import { createSessionClient } from "@/lib/appwrite/appwrite"
-import { NextResponse } from "next/server";
 import { ID } from "node-appwrite";
 import { InputFile } from "node-appwrite/file";
 
-// TODO: fix the types later on
-export async function uploadImage(storage, imagePath) {
+
+export async function uploadImage(storage: Storage, imagePath: string) {
   try {
     const id = ID.unique()
     const uploadedImageResponse = await storage.createFile(
@@ -14,9 +12,7 @@ export async function uploadImage(storage, imagePath) {
     )
     return uploadedImageResponse;
 
-  } catch (error) {
-    console.error(error);
-    console.error('Error uploading image');
+  } catch {
     return null
   }
 }
