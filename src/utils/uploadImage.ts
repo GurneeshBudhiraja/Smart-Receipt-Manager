@@ -2,7 +2,7 @@ import { ID } from "node-appwrite";
 import { InputFile } from "node-appwrite/file";
 
 
-export async function uploadImage(storage: Storage, imagePath: string) {
+export async function uploadImage(storage: Storage, imagePath: File) {
   try {
     const id = ID.unique()
     const uploadedImageResponse = await storage.createFile(
