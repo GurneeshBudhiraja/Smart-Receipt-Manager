@@ -43,7 +43,7 @@ export default function ReceiptFormModal({ onClose }: ReceiptForm) {
     if (tags.length === 0) newErrors.tags = "Please add at least one tag";
 
     setErrors(newErrors);
-    setTimeout(() => setOpen(false),2000);
+    setTimeout(() => setOpen(false), 2000);
     return Object.keys(newErrors).length === 0;
   };
 
@@ -160,7 +160,7 @@ export default function ReceiptFormModal({ onClose }: ReceiptForm) {
       setReceiptText("");
       setTimeout(() => {
         setOpen(false);
-      }, 2000);
+      }, 1000);
     }
   };
 
