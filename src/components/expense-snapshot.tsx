@@ -81,7 +81,7 @@ export default function ExpenseSnapshot({
 // Loader
 function LoadingIndicator() {
   return (
-    <div className="flex justify-center items-center h-30 lg:h-64 absolute left-1/2 -translate-x-1/2 top-1/2 ">
+    <div className="flex justify-center items-center h-30 lg:h-64 absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 ">
       <div className="h-10 w-10 lg:h-16 lg:w-16 rounded-full drop-shadow-lg animate-spin   border-t-2 border-b-2 border-blue-500"></div>
     </div>
   );
